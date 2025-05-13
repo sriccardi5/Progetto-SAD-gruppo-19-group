@@ -11,3 +11,6 @@ https://docs.google.com/spreadsheets/d/1LM_F8F4Qcb0U-MgGzGN-0dEMVQoR7p9tHJWno3D9
 ## Presentazione
 
 https://docs.google.com/presentation/d/18kC6IL6vC8kEIFCqZXTDvHZF942UNRSJgkE4_DhaKDU/edit?usp=sharing
+
+## Software Architecture
+https://docs.google.com/document/d/1RchjTW1GB7jfcJRWx_df81dCd_wiTc9_F2CQITxSyzQ/edit?usp=sharing
