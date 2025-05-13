@@ -7,3 +7,7 @@ https://trello.com/invite/b/681e234cbae5e40711a659b5/ATTI88ee9a71b76bfa7d5dc977d
 ## Backlogs
 
 https://docs.google.com/spreadsheets/d/1LM_F8F4Qcb0U-MgGzGN-0dEMVQoR7p9tHJWno3D9YMM/edit?usp=sharing
+
+## Presentazione
+
+https://docs.google.com/presentation/d/18kC6IL6vC8kEIFCqZXTDvHZF942UNRSJgkE4_DhaKDU/edit?usp=sharing
