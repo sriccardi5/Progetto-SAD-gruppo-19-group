@@ -6,4 +6,6 @@ import javafx.scene.Node;
 public interface Shape {
     Node getNode();
     void onDrag(double x, double y);
+    
+    boolean contains(double x, double y);
 }

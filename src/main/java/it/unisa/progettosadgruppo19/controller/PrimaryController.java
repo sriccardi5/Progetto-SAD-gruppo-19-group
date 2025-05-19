@@ -12,7 +12,10 @@ import javafx.scene.input.MouseEvent;
 
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
+import it.unisa.progettosadgruppo19.shapes.EllipseShape;
+import it.unisa.progettosadgruppo19.shapes.RectangleShape;
 import it.unisa.progettosadgruppo19.shapes.Shape;
+import javafx.scene.Node;
 
 public class PrimaryController {
 
@@ -39,6 +42,7 @@ public class PrimaryController {
         drawingPane.setOnMousePressed(this::onPressed);
         drawingPane.setOnMouseDragged(this::onDragged);
         drawingPane.setOnMouseReleased(this::onReleased);
+        drawingPane.setOnMouseClicked(this::onMouseClick);
     }
     
     private void onPressed(MouseEvent e) {
@@ -65,6 +69,19 @@ public class PrimaryController {
        tempShape = null;
     }
     
+    private void onMouseClick(MouseEvent e) {
+    for (Node node : drawingPane.getChildren()) {
+        if (!(node instanceof javafx.scene.shape.Shape fxShape)) continue;
+        if (!fxShape.contains(e.getX(), e.getY())) continue;
 
+        // Rileva solo closed shapes
+        Object userData = fxShape.getUserData();
+        if (!(userData instanceof Shape shape)) continue;
+        if (!(shape instanceof RectangleShape || shape instanceof EllipseShape)) continue;
+
+        break;
+        }
+    }
+    
 }
 

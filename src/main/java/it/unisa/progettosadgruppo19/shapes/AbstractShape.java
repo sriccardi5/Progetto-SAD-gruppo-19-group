@@ -19,4 +19,9 @@ public abstract class AbstractShape implements Shape {
         return node;
     }
     // non serve qui onDrag/onRelease, le lascio astratte e le implementi nelle sottoclassi
+    
+    @Override
+    public boolean contains(double x, double y) {
+        return node.contains(x, y);
+    }
 }
