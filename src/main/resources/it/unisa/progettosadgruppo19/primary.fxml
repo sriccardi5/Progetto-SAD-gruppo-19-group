@@ -3,7 +3,15 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="it.unisa.progettosadgruppo19.controller.PrimaryController">
- 
+  <top>
+    <ToolBar>
+        <Button fx:id="lineButton" text="Linea" />
+        <Button fx:id="rectButton" text="Rettangolo" />
+        <Button fx:id="ellipseButton" text="Ellisse" />
+        <Label text="Bordo:"/>
+        <Label text="Riempimento:"/>  
+    </ToolBar>
+  </top>
   <center>
     <Pane fx:id="drawingPane" style="-fx-background-color: white;" />
   </center>
