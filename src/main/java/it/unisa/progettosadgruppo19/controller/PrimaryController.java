@@ -34,7 +34,7 @@ public class PrimaryController {
         rectButton.setOnAction(e -> selectedShape = "Rettangolo");
         ellipseButton.setOnAction(e -> selectedShape = "Ellisse");
         
-        strokePicker.setValue(javafx.scene.paint.Color.BLACK);
+        strokePicker.setValue(javafx.scene.paint.Color.BLACK); //default
         
         drawingPane.setOnMousePressed(this::onPressed);
         drawingPane.setOnMouseDragged(this::onDragged);
