@@ -12,8 +12,6 @@ import javafx.scene.input.MouseEvent;
 
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
-import it.unisa.progettosadgruppo19.model.DrawingModel;
-import it.unisa.progettosadgruppo19.view.DrawingPaneView;
 import it.unisa.progettosadgruppo19.shapes.Shape;
 
 public class PrimaryController {
@@ -24,14 +22,11 @@ public class PrimaryController {
     @FXML private Button ellipseButton;
    
     private Shape tempShape;
-    private final DrawingModel model = new DrawingModel();
     
     private String selectedShape = "Linea"; // Valore di default
 
     @FXML
     public void initialize() {
-        model.addListener(new DrawingPaneView(drawingPane));
-
         
         // Imposta la forma selezionata in base al bottone cliccato
         lineButton.setOnAction(e -> selectedShape = "Linea");
@@ -50,15 +45,22 @@ public class PrimaryController {
             e.getX(),
             e.getY()
         );
-        model.addShape(tempShape);
+
+        drawingPane.getChildren().add(tempShape.getNode());
     }
     
     private void onDragged(MouseEvent e) {
-        if (tempShape != null) tempShape.onDrag(e.getX(), e.getY());
+        if (tempShape != null) {
+            double x = Math.min(Math.max(0,e.getX()),drawingPane.getWidth());
+            double y = Math.min(Math.max(0,e.getY()), drawingPane.getHeight());
+            tempShape.onDrag(x,y);
+        }
     }
 
     private void onReleased(MouseEvent e) {
-        tempShape = null;
+       tempShape = null;
     }
+    
+
 }
 

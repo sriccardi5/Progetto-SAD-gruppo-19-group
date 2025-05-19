@@ -2,6 +2,7 @@
 package it.unisa.progettosadgruppo19.shapes;
 
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 
 public abstract class AbstractShape implements Shape {
     // qui specifico il tipo JavaFX in maniera pienamente qualificata
@@ -9,6 +10,8 @@ public abstract class AbstractShape implements Shape {
 
     public AbstractShape(javafx.scene.shape.Shape node) {
         this.node = node;
+        node.setFill(Color.TRANSPARENT);
+        node.setStroke(Color.BLACK);
     }
 
     @Override
