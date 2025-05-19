@@ -2,7 +2,6 @@
 package it.unisa.progettosadgruppo19.shapes;
 
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 
@@ -13,7 +12,6 @@ public class LineShape extends AbstractShape {
         super(new Line(startX, startY, startX, startY));
         this.startX = startX;
         this.startY = startY;
-        ((Line)node).setStroke(Color.BLACK);
     }
 
     @Override

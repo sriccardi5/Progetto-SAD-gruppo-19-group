@@ -12,6 +12,8 @@ import javafx.scene.input.MouseEvent;
 
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
+import it.unisa.progettosadgruppo19.model.DrawingModel;
+import it.unisa.progettosadgruppo19.view.DrawingPaneView;
 import it.unisa.progettosadgruppo19.shapes.Shape;
 
 public class PrimaryController {
@@ -22,13 +24,15 @@ public class PrimaryController {
     @FXML private Button ellipseButton;
    
     private Shape tempShape;
+    private final DrawingModel model = new DrawingModel();
     
     private String selectedShape = "Linea"; // Valore di default
 
     @FXML
     public void initialize() {
-        drawingPane.getChildren().clear();   
+        model.addListener(new DrawingPaneView(drawingPane));
 
+        
         // Imposta la forma selezionata in base al bottone cliccato
         lineButton.setOnAction(e -> selectedShape = "Linea");
         rectButton.setOnAction(e -> selectedShape = "Rettangolo");
@@ -46,6 +50,7 @@ public class PrimaryController {
             e.getX(),
             e.getY()
         );
+        model.addShape(tempShape);
     }
     
     private void onDragged(MouseEvent e) {
