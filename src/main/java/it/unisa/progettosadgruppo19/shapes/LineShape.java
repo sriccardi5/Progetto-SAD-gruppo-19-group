@@ -21,4 +21,8 @@ public class LineShape extends AbstractShape {
         l.setEndX(x);
         l.setEndY(y);
     }
+    
+    @Override
+    public void onRelease() {
+    }
 }

@@ -9,7 +9,9 @@
         <Button fx:id="rectButton" text="Rettangolo" />
         <Button fx:id="ellipseButton" text="Ellisse" />
         <Label text="Bordo:"/>
-        <ColorPicker fx:id="strokePicker"/>        
+        <ColorPicker fx:id="strokePicker"/>     
+        <Label text="Riempimento:" />
+        <ColorPicker fx:id="fillPicker" />   
     </ToolBar>
   </top>
   <center>

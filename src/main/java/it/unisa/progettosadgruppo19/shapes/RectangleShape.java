@@ -23,4 +23,8 @@ public class RectangleShape extends AbstractShape {
         r.setWidth(Math.abs(x - startX));
         r.setHeight(Math.abs(y - startY));
     }
+    
+    @Override
+    public void onRelease() {
+    }
 }

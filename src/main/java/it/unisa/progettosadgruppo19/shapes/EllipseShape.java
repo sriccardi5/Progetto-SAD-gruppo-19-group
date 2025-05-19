@@ -23,4 +23,8 @@ public class EllipseShape extends AbstractShape {
         e.setRadiusX(Math.abs(x - startX) / 2);
         e.setRadiusY(Math.abs(y - startY) / 2);
     }
+    
+    @Override
+    public void onRelease() {
+    }
 }
