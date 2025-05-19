@@ -13,7 +13,7 @@ public class PrimaryController {
     @FXML private Pane drawingPane;
     @FXML private Button lineButton;
     @FXML private Button rectButton;
-    @FXML private Button ellipseButtjon;
+    @FXML private Button ellipseButton;
 
     private String selectedShape = "Linea"; // Valore di default
 
