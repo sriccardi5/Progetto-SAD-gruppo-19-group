@@ -20,6 +20,7 @@ public class PrimaryController {
     @FXML private Button lineButton;
     @FXML private Button rectButton;
     @FXML private Button ellipseButton;
+    @FXML private ColorPicker strokePicker;
    
     private Shape tempShape;
     
@@ -33,6 +34,8 @@ public class PrimaryController {
         rectButton.setOnAction(e -> selectedShape = "Rettangolo");
         ellipseButton.setOnAction(e -> selectedShape = "Ellisse");
         
+        strokePicker.setValue(javafx.scene.paint.Color.BLACK);
+        
         drawingPane.setOnMousePressed(this::onPressed);
         drawingPane.setOnMouseDragged(this::onDragged);
         drawingPane.setOnMouseReleased(this::onReleased);
@@ -43,7 +46,8 @@ public class PrimaryController {
         // crea la forma con le coordinate e i colori selezionati
         tempShape = creator.create(
             e.getX(),
-            e.getY()
+            e.getY(),
+            strokePicker.getValue()
         );
 
         drawingPane.getChildren().add(tempShape.getNode());

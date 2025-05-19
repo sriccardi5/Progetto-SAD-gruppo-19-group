@@ -6,8 +6,9 @@
 package it.unisa.progettosadgruppo19.factory;
 
 import it.unisa.progettosadgruppo19.shapes.Shape;
+import javafx.scene.paint.Color;
 
 @FunctionalInterface
 public interface ShapeCreator {
-    Shape create(double startX, double startY);
+    Shape create(double startX, double startY, Color stroke);
 }

@@ -1,16 +1,18 @@
 // shapes/EllipseShape.java
 package it.unisa.progettosadgruppo19.shapes;
 
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 
 public class EllipseShape extends AbstractShape {
     private final double startX, startY;
 
-    public EllipseShape(double startX, double startY) {
+    public EllipseShape(double startX, double startY, Color stroke) {
         super(new Ellipse(startX, startY, 0, 0));
         this.startX = startX;
         this.startY = startY;
         Ellipse e = (Ellipse) node;
+        e.setStroke(stroke);
     }
 
     @Override

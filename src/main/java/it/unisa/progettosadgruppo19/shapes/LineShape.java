@@ -1,17 +1,18 @@
 // shapes/LineShape.java
 package it.unisa.progettosadgruppo19.shapes;
 
-import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 
 public class LineShape extends AbstractShape {
     private final double startX, startY;
 
-    public LineShape(double startX, double startY) {
+    public LineShape(double startX, double startY, Color stroke) {
         super(new Line(startX, startY, startX, startY));
         this.startX = startX;
         this.startY = startY;
+        ((Line)node).setStroke(stroke);
     }
 
     @Override
