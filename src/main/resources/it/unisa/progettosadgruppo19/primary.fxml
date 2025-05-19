@@ -8,6 +8,8 @@
         <Button fx:id="lineButton" text="Linea" />
         <Button fx:id="rectButton" text="Rettangolo" />
         <Button fx:id="ellipseButton" text="Ellisse" />
+        <Label text="Bordo:"/>
+        <ColorPicker fx:id="strokePicker"/>        
     </ToolBar>
   </top>
   <center>
