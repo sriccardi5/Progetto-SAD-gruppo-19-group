@@ -15,7 +15,7 @@ public class PrimaryController {
 
     @FXML
     public void initialize() { 
-        drawingPane.getChildren().clear();    //finestra vuota
+        drawingPane.getChildren().clear();    
     }
 }
 
