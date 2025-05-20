@@ -29,7 +29,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class PrimaryController {
+public class Controller {
 
     @FXML
     private Pane drawingPane;

@@ -2,11 +2,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.unisa.progettosadgruppo19.controller.PrimaryController">
+            fx:controller="it.unisa.progettosadgruppo19.controller.Controller">
   <top>
     <ToolBar>
         <Button fx:id="saveButton" text="Save" />
         <Button fx:id="loadButton" text="Load" />
+        <Button fx:id="deleteButton" text="Delete"/>
         <Button fx:id="lineButton" text="Linea" />
         <Button fx:id="rectButton" text="Rettangolo" />
         <Button fx:id="ellipseButton" text="Ellisse" />
