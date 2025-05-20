@@ -1,7 +1,9 @@
 // src/main/java/it/unisa/progettosadgruppo19/factory/ConcreteShapeCreator.java
 package it.unisa.progettosadgruppo19.factory;
 
-import it.unisa.progettosadgruppo19.shapes.*;
+import it.unisa.progettosadgruppo19.model.shapes.LineShape;
+import it.unisa.progettosadgruppo19.model.shapes.RectangleShape;
+import it.unisa.progettosadgruppo19.model.shapes.EllipseShape;
 
 public class ConcreteShapeCreator {
     public static ShapeCreator getCreator(String tipo) {

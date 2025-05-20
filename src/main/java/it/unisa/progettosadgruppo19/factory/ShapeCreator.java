@@ -5,7 +5,7 @@
 // src/main/java/it/unisa/progettosadgruppo19/factory/ShapeCreator.java
 package it.unisa.progettosadgruppo19.factory;
 
-import it.unisa.progettosadgruppo19.shapes.Shape;
+import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.paint.Color;
 
 @FunctionalInterface

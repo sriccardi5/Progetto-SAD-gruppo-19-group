@@ -4,7 +4,7 @@
  */
 package it.unisa.progettosadgruppo19.decorator;
 
-import it.unisa.progettosadgruppo19.shapes.Shape;
+import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.paint.Color;
 
 public class FillDecorator extends ShapeDecorator {
