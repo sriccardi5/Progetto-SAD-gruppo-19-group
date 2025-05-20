@@ -8,6 +8,7 @@ import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.Node;
 
 public abstract class ShapeDecorator implements Shape {
+
     protected final Shape decorated;
 
     public ShapeDecorator(Shape decorated) {

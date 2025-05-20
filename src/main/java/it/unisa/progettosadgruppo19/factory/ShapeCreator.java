@@ -10,5 +10,6 @@ import javafx.scene.paint.Color;
 
 @FunctionalInterface
 public interface ShapeCreator {
+
     Shape create(double startX, double startY, Color stroke);
 }

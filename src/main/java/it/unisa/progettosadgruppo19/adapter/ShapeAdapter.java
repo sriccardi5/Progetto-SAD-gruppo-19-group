@@ -20,11 +20,11 @@ public class ShapeAdapter implements Serializable {
     private ShapeData convertToShapeData(AbstractShape shape) {
         String type = shape.getClass().getSimpleName();
         return new ShapeData(
-            type,
-            shape.getX(),
-            shape.getY(),
-            shape.getWidth(),
-            shape.getHeight()
+                type,
+                shape.getX(),
+                shape.getY(),
+                shape.getWidth(),
+                shape.getHeight()
         );
     }
 

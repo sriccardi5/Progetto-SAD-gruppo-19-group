@@ -28,11 +28,12 @@ public abstract class AbstractShape implements Shape {
     public boolean contains(double x, double y) {
         return node.contains(x, y);
     }
-    
+
     public abstract double getX();
+
     public abstract double getY();
+
     public abstract double getWidth();
+
     public abstract double getHeight();
 }
-
-    

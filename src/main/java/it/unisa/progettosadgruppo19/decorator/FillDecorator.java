@@ -8,6 +8,7 @@ import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.paint.Color;
 
 public class FillDecorator extends ShapeDecorator {
+
     public FillDecorator(Shape decorated, Color fill) {
         super(decorated);
         ((javafx.scene.shape.Shape) decorated.getNode()).setFill(fill);

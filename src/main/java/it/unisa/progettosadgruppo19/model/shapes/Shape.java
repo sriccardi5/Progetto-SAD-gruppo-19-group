@@ -7,9 +7,12 @@ package it.unisa.progettosadgruppo19.model.shapes;
 import javafx.scene.Node;
 
 public interface Shape {
+
     Node getNode();
+
     void onDrag(double x, double y);
+
     void onRelease();
-    
+
     boolean contains(double x, double y);
 }

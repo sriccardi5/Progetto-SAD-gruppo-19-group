@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class RectangleShape extends AbstractShape {
+
     private final double startX, startY;
     private final Rectangle r;
 
@@ -27,11 +28,11 @@ public class RectangleShape extends AbstractShape {
         r.setWidth(Math.abs(x - startX));
         r.setHeight(Math.abs(y - startY));
     }
-    
+
     @Override
     public void onRelease() {
     }
-    
+
     @Override
     public double getX() {
         return r.getX();

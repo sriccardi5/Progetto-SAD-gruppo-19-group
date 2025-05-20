@@ -28,7 +28,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-
 public class PrimaryController {
 
     @FXML
@@ -45,21 +44,19 @@ public class PrimaryController {
     private ColorPicker fillPicker;
     @FXML
     private Button saveButton;
-    
-    private final List<AbstractShape> currentShapes = new ArrayList<>();
 
+    private final List<AbstractShape> currentShapes = new ArrayList<>();
 
     private Shape tempShape;
     private String selectedShape = "Linea"; // Valore di default
-    
-    private Shape selectedShapeInstance = null;
 
+    private Shape selectedShapeInstance = null;
 
     @FXML
     public void initialize() {
-        
+
         saveButton.setOnAction(evt -> onSave());
-        
+
         // Imposta la forma selezionata in base al bottone cliccato
         lineButton.setOnAction(e -> selectedShape = "Linea");
         rectButton.setOnAction(e -> selectedShape = "Rettangolo");
@@ -73,21 +70,21 @@ public class PrimaryController {
         drawingPane.setOnMouseDragged(this::onDragged);
         drawingPane.setOnMouseReleased(this::onReleased);
         drawingPane.setOnMouseClicked(this::onMouseClick);
-        
+
         fillPicker.setOnAction(e -> {
-        if (selectedShapeInstance != null) {
-            // Crea un nuovo decorator con il nuovo colore
-            Shape decorated = new FillDecorator(selectedShapeInstance, fillPicker.getValue());
+            if (selectedShapeInstance != null) {
+                // Crea un nuovo decorator con il nuovo colore
+                Shape decorated = new FillDecorator(selectedShapeInstance, fillPicker.getValue());
 
-            // Sostituisci il nodo nella UI
-            int index = drawingPane.getChildren().indexOf(selectedShapeInstance.getNode());
-            drawingPane.getChildren().set(index, decorated.getNode());
+                // Sostituisci il nodo nella UI
+                int index = drawingPane.getChildren().indexOf(selectedShapeInstance.getNode());
+                drawingPane.getChildren().set(index, decorated.getNode());
 
-            // Aggiorna userData e riferimento
-            decorated.getNode().setUserData(decorated);
-            selectedShapeInstance = decorated;
-        }
-    });
+                // Aggiorna userData e riferimento
+                decorated.getNode().setUserData(decorated);
+                selectedShapeInstance = decorated;
+            }
+        });
     }
 
     private void onPressed(MouseEvent e) {
@@ -118,31 +115,32 @@ public class PrimaryController {
     }
 
     private void onMouseClick(MouseEvent e) {
-    selectedShapeInstance = null; // Deseleziona la figura precedente
+        selectedShapeInstance = null; // Deseleziona la figura precedente
 
-    for (Node node : drawingPane.getChildren()) {
-        if (!(node instanceof javafx.scene.shape.Shape fxShape)) {
-            continue;
-        }
-        if (!fxShape.contains(e.getX(), e.getY())) {
-            continue;
-        }
+        for (Node node : drawingPane.getChildren()) {
+            if (!(node instanceof javafx.scene.shape.Shape fxShape)) {
+                continue;
+            }
+            if (!fxShape.contains(e.getX(), e.getY())) {
+                continue;
+            }
 
-        Object userData = fxShape.getUserData();
-        if (!(userData instanceof Shape shape)) {
-            continue;
-        }
+            Object userData = fxShape.getUserData();
+            if (!(userData instanceof Shape shape)) {
+                continue;
+            }
 
-        selectedShapeInstance = shape; // Seleziona la figura cliccata
-        break;
+            selectedShapeInstance = shape; // Seleziona la figura cliccata
+            break;
+        }
     }
-}
-     private void onSave() {
+
+    private void onSave() {
         Stage stage = (Stage) saveButton.getScene().getWindow();
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Salva disegno");
         chooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Drawing files (*.bin)", "*.bin")
+                new FileChooser.ExtensionFilter("Drawing files (*.bin)", "*.bin")
         );
         chooser.setInitialFileName("drawing.bin");
 
@@ -151,8 +149,8 @@ public class PrimaryController {
         if (file != null) {
             try {
                 List<ShapeData> dataList = currentShapes.stream()
-                    .map(shape -> new ShapeAdapter(shape).getShapeData())
-                    .collect(Collectors.toList());
+                        .map(shape -> new ShapeAdapter(shape).getShapeData())
+                        .collect(Collectors.toList());
 
                 DrawingData drawingData = new DrawingData(dataList);
 

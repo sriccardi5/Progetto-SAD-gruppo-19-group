@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class DrawingData implements Serializable {
+
     private List<ShapeData> shapes;
 
     public DrawingData(List<ShapeData> shapes) {
@@ -17,4 +18,4 @@ public class DrawingData implements Serializable {
     public List<ShapeData> getShapes() {
         return shapes;
     }
-} 
+}

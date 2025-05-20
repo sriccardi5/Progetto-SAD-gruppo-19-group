@@ -8,6 +8,7 @@ import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.paint.Color;
 
 public class StrokeDecorator extends ShapeDecorator {
+
     public StrokeDecorator(Shape decorated, Color stroke) {
         super(decorated);
         ((javafx.scene.shape.Shape) decorated.getNode()).setStroke(stroke);

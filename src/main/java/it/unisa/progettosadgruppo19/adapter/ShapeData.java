@@ -7,6 +7,7 @@ package it.unisa.progettosadgruppo19.adapter;
 import java.io.Serializable;
 
 public class ShapeData implements Serializable {
+
     private String type;
     private double x, y, width, height;
 
@@ -18,11 +19,25 @@ public class ShapeData implements Serializable {
         this.height = height;
     }
 
-    public String getType() { return type; }
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getWidth() { return width; }
-    public double getHeight() { return height; }
+    public String getType() {
+        return type;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
 
     @Override
     public String toString() {
