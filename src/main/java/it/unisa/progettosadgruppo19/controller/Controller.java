@@ -120,20 +120,16 @@ public class Controller {
         });
     }
 
-    private void onPressed(MouseEvent e) {
+    private void onPressed(MouseEvent e) {    
+     
         
-        
-        
-        if (selectedShapeInstance != null) {
-        // Ancora del mouse
+
+
+    // 1) DRAG di una shape selezionata
+    if (selectedShapeInstance != null) {
         moveAnchorX = e.getX();
         moveAnchorY = e.getY();
-        
-        if (currentTool == Tool.NONE || selectedShapeInstance != null) {
-            return;
-        }
 
-        // Salvo le coordinate iniziali in base al tipo di nodo
         Node node = selectedShapeInstance.getNode();
         if (node instanceof javafx.scene.shape.Line line) {
             origX1 = line.getStartX();
@@ -147,34 +143,32 @@ public class Controller {
             origCenterX = ell.getCenterX();
             origCenterY = ell.getCenterY();
         }
-        return;  // esco: sto muovendo, non disegno nulla
+        return;
     }
-        
-        System.out.println("onPressed chiamato");           
-        
-        // Crea la shape concreta (non decorata)
-        ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
-        AbstractShape concrete = (AbstractShape) creator.create(e.getX(), e.getY(), strokePicker.getValue());
 
-        // Salva la forma per il salvataggio futuro
-        currentShapes.add(concrete);
-        System.out.println("Aggiunta shape a currentShapes: " + concrete.getClass().getSimpleName());
+    // 2) SE NON c’è un tool di disegno selezionato, esco
+    if (currentTool == Tool.NONE) {
+        return;
+    }
 
-        // Applica i decorator per colore e riempimento
-        tempShape = new StrokeDecorator(concrete, strokePicker.getValue());
-        tempShape = new FillDecorator(tempShape, fillPicker.getValue());
+    // 3) LOGICA DI CREAZIONE NUOVA SHAPE
+    System.out.println("onPressed chiamato");
+    ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
+    AbstractShape concrete = (AbstractShape) creator.create(e.getX(), e.getY(), strokePicker.getValue());
+    currentShapes.add(concrete);
+    System.out.println("Aggiunta shape a currentShapes: " + concrete.getClass().getSimpleName());
 
-        // Collega il nodo alla shape decorata
-        tempShape.getNode().setUserData(tempShape);
-
-        // Aggiungi la figura al canvas
-        drawingPane.getChildren().add(tempShape.getNode());
+    tempShape = new StrokeDecorator(concrete, strokePicker.getValue());
+    tempShape = new FillDecorator(tempShape, fillPicker.getValue());
+    tempShape.getNode().setUserData(tempShape);
+    drawingPane.getChildren().add(tempShape.getNode());
     }
 
     private void onDragged(MouseEvent e) {
         
         
-        if (selectedShapeInstance != null) {
+        // 1) se sto spostando una shape selezionata
+    if (selectedShapeInstance != null) {
         double dx = e.getX() - moveAnchorX;
         double dy = e.getY() - moveAnchorY;
 
@@ -191,29 +185,34 @@ public class Controller {
             ell.setCenterX(origCenterX + dx);
             ell.setCenterY(origCenterY + dy);
         }
-        return;   // esco per non eseguire anche il codice di disegno
+        return;
     }
-        
-        if (currentTool == Tool.NONE || selectedShapeInstance != null) {
-            return;
-        }
-        
-        if (tempShape != null) {
-            System.out.println("onDragged: " + e.getX() + "," + e.getY());
-            double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
-            double y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
-            tempShape.onDrag(x, y);
-        }
+
+    // 2) se non ho tool di disegno, esco
+    if (currentTool == Tool.NONE) {
+        return;
+    }
+
+    // 3) altrimenti continuo il drag per la nuova shape
+    if (tempShape != null) {
+        System.out.println("onDragged: " + e.getX() + "," + e.getY());
+        double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
+        double y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
+        tempShape.onDrag(x, y);
+    }
     }
 
     private void onReleased(MouseEvent e) {
-        System.out.println("onReleased chiamato");
-        
-        if (currentTool == Tool.NONE || selectedShapeInstance != null) {
-            return;
-        }
-        
-        tempShape = null;
+        // se stavo spostando, termino il drag
+    if (selectedShapeInstance != null) {
+        return;
+    }
+    // se non c’è tool attivo, esco
+    if (currentTool == Tool.NONE) {
+        return;
+    }
+    // altrimenti termino la creazione della shape
+    tempShape = null;
     }
 
     /**
