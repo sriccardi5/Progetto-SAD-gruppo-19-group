@@ -1,10 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package it.unisa.progettosadgruppo19.adapter;
 
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+
 import java.io.Serializable;
 
 public class ShapeAdapter implements Serializable {
@@ -19,12 +18,23 @@ public class ShapeAdapter implements Serializable {
 
     private ShapeData convertToShapeData(AbstractShape shape) {
         String type = shape.getClass().getSimpleName();
+        javafx.scene.shape.Shape fxNode = (javafx.scene.shape.Shape) shape.getNode();
+
+        // Convert Paint → Color in modo sicuro
+        Paint stroke = fxNode.getStroke();
+        Paint fill = fxNode.getFill();
+
+        Color strokeColor = (stroke instanceof Color c) ? c : Color.BLACK;
+        Color fillColor = (fill instanceof Color c) ? c : Color.TRANSPARENT;
+
         return new ShapeData(
                 type,
                 shape.getX(),
                 shape.getY(),
                 shape.getWidth(),
-                shape.getHeight()
+                shape.getHeight(),
+                strokeColor,
+                fillColor
         );
     }
 

@@ -1,21 +1,13 @@
 package it.unisa.progettosadgruppo19.factory;
 
 import it.unisa.progettosadgruppo19.model.shapes.*;
-import javafx.application.Platform;
 import javafx.scene.paint.Color;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import java.util.concurrent.CountDownLatch;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConcreteShapeCreatorTest {
 
-    @BeforeAll
-    static void initFX() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.startup(latch::countDown);
-        latch.await();
-    }
+    private static boolean toolkitInitialized = false;
 
     //"Linea" -> LineShape
     @Test

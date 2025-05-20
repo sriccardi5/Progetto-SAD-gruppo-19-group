@@ -7,13 +7,14 @@ package it.unisa.progettosadgruppo19.controller;
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
 import it.unisa.progettosadgruppo19.decorator.*;
-import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
-import it.unisa.progettosadgruppo19.model.shapes.Shape;
+import it.unisa.progettosadgruppo19.model.shapes.*;
 import it.unisa.progettosadgruppo19.adapter.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javafx.fxml.FXML;
@@ -44,6 +45,8 @@ public class PrimaryController {
     private ColorPicker fillPicker;
     @FXML
     private Button saveButton;
+    @FXML
+    private Button loadButton;
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
 
@@ -56,6 +59,7 @@ public class PrimaryController {
     public void initialize() {
 
         saveButton.setOnAction(evt -> onSave());
+        loadButton.setOnAction(evt -> onLoad());
 
         // Imposta la forma selezionata in base al bottone cliccato
         lineButton.setOnAction(e -> selectedShape = "Linea");
@@ -88,22 +92,30 @@ public class PrimaryController {
     }
 
     private void onPressed(MouseEvent e) {
-        ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
-        tempShape = creator.create(e.getX(), e.getY(), strokePicker.getValue());
+        System.out.println("onPressed chiamato");
 
-        // Applica i decorator per colore bordo e riempimento iniziale
-        tempShape = new StrokeDecorator(tempShape, strokePicker.getValue());
+        // Crea la shape concreta (non decorata)
+        ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
+        AbstractShape concrete = (AbstractShape) creator.create(e.getX(), e.getY(), strokePicker.getValue());
+
+        // Salva la forma per il salvataggio futuro
+        currentShapes.add(concrete);
+        System.out.println("Aggiunta shape a currentShapes: " + concrete.getClass().getSimpleName());
+
+        // Applica i decorator per colore e riempimento
+        tempShape = new StrokeDecorator(concrete, strokePicker.getValue());
         tempShape = new FillDecorator(tempShape, fillPicker.getValue());
 
-        // Collega il nodo all'oggetto Shape
+        // Collega il nodo alla shape decorata
         tempShape.getNode().setUserData(tempShape);
 
-        // Aggiunge la figura al pannello
+        // Aggiungi la figura al canvas
         drawingPane.getChildren().add(tempShape.getNode());
     }
 
     private void onDragged(MouseEvent e) {
         if (tempShape != null) {
+            System.out.println("onDragged: " + e.getX() + "," + e.getY());
             double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
             double y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
             tempShape.onDrag(x, y);
@@ -111,6 +123,7 @@ public class PrimaryController {
     }
 
     private void onReleased(MouseEvent e) {
+        System.out.println("onReleased chiamato");
         tempShape = null;
     }
 
@@ -136,6 +149,7 @@ public class PrimaryController {
     }
 
     private void onSave() {
+        System.out.println("Salvataggio: " + currentShapes.size() + " shape da serializzare");
         Stage stage = (Stage) saveButton.getScene().getWindow();
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Salva disegno");
@@ -164,4 +178,74 @@ public class PrimaryController {
             }
         }
     }
+
+    private DrawingData loadDrawingData(File file) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            Object obj = in.readObject();
+            if (obj instanceof DrawingData data) {
+                return data;
+            } else {
+                throw new IOException("File does not contain valid DrawingData");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Shape rebuildShape(ShapeData data) {
+        ShapeCreator creator = switch (data.getType()) {
+            case "RectangleShape" ->
+                RectangleShape::new;
+            case "EllipseShape" ->
+                EllipseShape::new;
+            case "LineShape" ->
+                LineShape::new;
+            default ->
+                throw new IllegalArgumentException("Tipo non supportato: " + data.getType());
+        };
+
+        Shape shape = creator.create(data.getX(), data.getY(), data.getStroke());
+
+        shape.onDrag(data.getX() + data.getWidth(), data.getY() + data.getHeight());
+        shape.onRelease();
+
+        shape = new StrokeDecorator(shape, data.getStroke());
+        shape = new FillDecorator(shape, data.getFill());
+
+        shape.getNode().setUserData(shape);
+        return shape;
+    }
+
+    private void onLoad() {
+        Stage stage = (Stage) loadButton.getScene().getWindow();
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Carica disegno");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Drawing files (*.bin)", "*.bin")
+        );
+
+        File file = chooser.showOpenDialog(stage);
+
+        if (file != null) {
+            DrawingData loadedData = loadDrawingData(file);
+            if (loadedData != null) {
+                System.out.println("Disegno caricato con " + loadedData.getShapes().size() + " forme.");
+
+                drawingPane.getChildren().clear();
+                currentShapes.clear();
+
+                for (ShapeData sData : loadedData.getShapes()) {
+                    Shape shape = rebuildShape(sData);
+
+                    drawingPane.getChildren().add(shape.getNode());
+
+                    if (shape instanceof AbstractShape concrete) {
+                        currentShapes.add(concrete);
+                    }
+                }
+            }
+        }
+    }
+
 }

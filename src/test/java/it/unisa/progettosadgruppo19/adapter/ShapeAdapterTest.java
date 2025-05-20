@@ -10,11 +10,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ShapeAdapterTest {
 
+    private static boolean toolkitInitialized = false;
+
     @BeforeAll
-    static void initFX() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.startup(latch::countDown);
-        latch.await();
+    static void initToolkit() throws InterruptedException {
+        if (!toolkitInitialized) {
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.startup(() -> {
+                toolkitInitialized = true;
+                latch.countDown();
+            });
+            latch.await();
+        }
     }
 
     @Test

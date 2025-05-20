@@ -5,23 +5,28 @@ import javafx.scene.shape.Rectangle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import java.util.concurrent.CountDownLatch;
+import javafx.application.Platform;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RectangleShapeTest {
 
+    private static boolean toolkitInitialized = false;
+
     @BeforeAll
     static void initJFX() throws InterruptedException {
-        if (!javafx.application.Platform.isFxApplicationThread()) {
-            final CountDownLatch latch = new CountDownLatch(1);
-            Thread thread = new Thread(() -> {
-                javafx.application.Platform.startup(() -> {
+        if (!toolkitInitialized) {
+            CountDownLatch latch = new CountDownLatch(1);
+            try {
+                Platform.startup(() -> {
+                    toolkitInitialized = true;
+                    latch.countDown();
                 });
-                latch.countDown();
-            });
-            thread.setDaemon(true);
-            thread.start();
-            latch.await(); // attende che JavaFX sia inizializzato
+                latch.await();
+            } catch (IllegalStateException e) {
+                // Toolkit già avviato da un altro test: lo ignoriamo
+                toolkitInitialized = true;
+            }
         }
     }
 
