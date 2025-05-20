@@ -8,9 +8,13 @@ https://trello.com/invite/b/681e234cbae5e40711a659b5/ATTI88ee9a71b76bfa7d5dc977d
 
 https://docs.google.com/spreadsheets/d/1LM_F8F4Qcb0U-MgGzGN-0dEMVQoR7p9tHJWno3D9YMM/edit?usp=sharing
 
-## Presentazione
+## Presentazione Pre-Game
 
 https://docs.google.com/presentation/d/18kC6IL6vC8kEIFCqZXTDvHZF942UNRSJgkE4_DhaKDU/edit?usp=sharing
+
+## Presentazione 1st Sprint
+
+https://docs.google.com/presentation/d/1Fo8CridRR4CJrb7PYKAl9ak8KszQ70fZmpO1VU8DsBw/edit?slide=id.g35b44a2c5ea_0_0#slide=id.g35b44a2c5ea_0_0
 
 ## Software Architecture
 
