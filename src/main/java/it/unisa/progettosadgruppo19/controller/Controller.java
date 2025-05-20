@@ -56,6 +56,19 @@ public class Controller {
     private String selectedShape = "Linea"; // Valore di default
 
     private Shape selectedShapeInstance = null;
+    
+    // tipo di operazione corrente
+    private enum Tool { NONE, LINE, RECTANGLE, ELLIPSE }
+    private Tool currentTool = Tool.NONE;
+    
+    private double moveAnchorX, moveAnchorY;
+    // linee
+    private double origX1, origY1, origX2, origY2;
+    // rettangoli
+    private double origX, origY;
+    // ellissi
+    private double origCenterX, origCenterY;
+
 
     @FXML
     public void initialize() {
@@ -66,9 +79,21 @@ public class Controller {
 
 
         // Imposta la forma selezionata in base al bottone cliccato
-        lineButton.setOnAction(e -> selectedShape = "Linea");
-        rectButton.setOnAction(e -> selectedShape = "Rettangolo");
-        ellipseButton.setOnAction(e -> selectedShape = "Ellisse");
+        lineButton.setOnAction(e -> {
+           currentTool = Tool.LINE;
+           selectedShape = "Linea";
+           selectedShapeInstance = null;           
+        });
+        rectButton.setOnAction(e -> {
+            currentTool = Tool.RECTANGLE;
+            selectedShape = "Rettangolo";
+            selectedShapeInstance = null;
+        });
+        ellipseButton.setOnAction(e -> {
+            currentTool = Tool.ELLIPSE;
+            selectedShape = "Ellisse";
+            selectedShapeInstance = null;
+        });
 
         //Default stroke/fill
         strokePicker.setValue(javafx.scene.paint.Color.BLACK);
@@ -96,8 +121,37 @@ public class Controller {
     }
 
     private void onPressed(MouseEvent e) {
-        System.out.println("onPressed chiamato");
+        
+        
+        
+        if (selectedShapeInstance != null) {
+        // Ancora del mouse
+        moveAnchorX = e.getX();
+        moveAnchorY = e.getY();
+        
+        if (currentTool == Tool.NONE || selectedShapeInstance != null) {
+            return;
+        }
 
+        // Salvo le coordinate iniziali in base al tipo di nodo
+        Node node = selectedShapeInstance.getNode();
+        if (node instanceof javafx.scene.shape.Line line) {
+            origX1 = line.getStartX();
+            origY1 = line.getStartY();
+            origX2 = line.getEndX();
+            origY2 = line.getEndY();
+        } else if (node instanceof javafx.scene.shape.Rectangle rect) {
+            origX = rect.getX();
+            origY = rect.getY();
+        } else if (node instanceof javafx.scene.shape.Ellipse ell) {
+            origCenterX = ell.getCenterX();
+            origCenterY = ell.getCenterY();
+        }
+        return;  // esco: sto muovendo, non disegno nulla
+    }
+        
+        System.out.println("onPressed chiamato");           
+        
         // Crea la shape concreta (non decorata)
         ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
         AbstractShape concrete = (AbstractShape) creator.create(e.getX(), e.getY(), strokePicker.getValue());
@@ -118,6 +172,32 @@ public class Controller {
     }
 
     private void onDragged(MouseEvent e) {
+        
+        
+        if (selectedShapeInstance != null) {
+        double dx = e.getX() - moveAnchorX;
+        double dy = e.getY() - moveAnchorY;
+
+        Node node = selectedShapeInstance.getNode();
+        if (node instanceof javafx.scene.shape.Line line) {
+            line.setStartX(origX1 + dx);
+            line.setStartY(origY1 + dy);
+            line.setEndX(origX2 + dx);
+            line.setEndY(origY2 + dy);
+        } else if (node instanceof javafx.scene.shape.Rectangle rect) {
+            rect.setX(origX + dx);
+            rect.setY(origY + dy);
+        } else if (node instanceof javafx.scene.shape.Ellipse ell) {
+            ell.setCenterX(origCenterX + dx);
+            ell.setCenterY(origCenterY + dy);
+        }
+        return;   // esco per non eseguire anche il codice di disegno
+    }
+        
+        if (currentTool == Tool.NONE || selectedShapeInstance != null) {
+            return;
+        }
+        
         if (tempShape != null) {
             System.out.println("onDragged: " + e.getX() + "," + e.getY());
             double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
@@ -128,29 +208,56 @@ public class Controller {
 
     private void onReleased(MouseEvent e) {
         System.out.println("onReleased chiamato");
+        
+        if (currentTool == Tool.NONE || selectedShapeInstance != null) {
+            return;
+        }
+        
         tempShape = null;
     }
 
+    /**
+ * Gestisce il click sul drawingPane:
+ *  - se clicco sopra una shape la seleziona
+ *  - se clicco sullo sfondo deseleziona qualsiasi shape
+ */
+    @FXML
     private void onMouseClick(MouseEvent e) {
-        selectedShapeInstance = null; // Deseleziona la figura precedente
+        // 1) Inizialmente tolgo ogni selezione
+        selectedShapeInstance = null;
 
+        boolean hit = false;
+
+        // 2) Scorro tutti i nodi del pane
         for (Node node : drawingPane.getChildren()) {
+            // Mi interessano solo i nodi di tipo javafx.scene.shape.Shape
             if (!(node instanceof javafx.scene.shape.Shape fxShape)) {
                 continue;
             }
+            // Verifico se il click è dentro i confini della shape
             if (!fxShape.contains(e.getX(), e.getY())) {
                 continue;
             }
 
+            // Recupero l'oggetto di dominio (Shape) salvato in userData
             Object userData = fxShape.getUserData();
             if (!(userData instanceof Shape shape)) {
                 continue;
             }
 
-            selectedShapeInstance = shape; // Seleziona la figura cliccata
+            // 3) Ho colpito una shape: la seleziono e interrompo il ciclo
+            selectedShapeInstance = shape;
+            hit = true;
             break;
         }
+
+        // 4) Se non ho colpito nulla, selectedShapeInstance rimane null (già deselezionato)
+        if (!hit) {
+            selectedShapeInstance = null;
+            currentTool = Tool.NONE;
+        }
     }
+
 
     private void onSave() {
         System.out.println("Salvataggio: " + currentShapes.size() + " shape da serializzare");
@@ -269,7 +376,7 @@ public class Controller {
             // Deseleziona
             selectedShapeInstance = null;
         }
-    }
+    } 
 
 
 }
