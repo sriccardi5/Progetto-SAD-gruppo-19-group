@@ -47,6 +47,8 @@ public class PrimaryController {
     private Button saveButton;
     @FXML
     private Button loadButton;
+    @FXML
+    private Button deleteButton;
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
 
@@ -60,6 +62,8 @@ public class PrimaryController {
 
         saveButton.setOnAction(evt -> onSave());
         loadButton.setOnAction(evt -> onLoad());
+        deleteButton.setOnAction(e -> onDelete());
+
 
         // Imposta la forma selezionata in base al bottone cliccato
         lineButton.setOnAction(e -> selectedShape = "Linea");
@@ -247,5 +251,25 @@ public class PrimaryController {
             }
         }
     }
+    
+    /**
+ * Rimuove dal canvas e da currentShapes la shape attualmente selezionata.
+ */
+    private void onDelete() {
+        if (selectedShapeInstance != null) {
+            // Nodo JavaFX sottostante
+            Node node = selectedShapeInstance.getNode();
+        
+            // Rimuovi dal Pane
+            drawingPane.getChildren().remove(node);
+        
+            // Rimuovi dall'elenco delle shape “concrete”
+            currentShapes.removeIf(shape -> shape.getNode().equals(node));
+        
+            // Deseleziona
+            selectedShapeInstance = null;
+        }
+    }
+
 
 }
