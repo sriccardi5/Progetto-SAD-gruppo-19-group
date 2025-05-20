@@ -5,6 +5,7 @@
             fx:controller="it.unisa.progettosadgruppo19.controller.PrimaryController">
   <top>
     <ToolBar>
+        <Button fx:id="saveButton" text="Save" />
         <Button fx:id="lineButton" text="Linea" />
         <Button fx:id="rectButton" text="Rettangolo" />
         <Button fx:id="ellipseButton" text="Ellisse" />
