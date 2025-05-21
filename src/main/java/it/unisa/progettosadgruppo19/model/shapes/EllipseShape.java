@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package it.unisa.progettosadgruppo19.model.shapes;
 
 import javafx.scene.paint.Color;
@@ -14,9 +10,10 @@ public class EllipseShape extends AbstractShape {
 
     private final double startX, startY;
     private final Ellipse e;
-    
+
     /**
      * Costruisce un'EllipseShape iniziale di raggio zero.
+     *
      * @param startX coordinata X del centro iniziale
      * @param startY coordinata Y del centro iniziale
      * @param stroke colore del contorno

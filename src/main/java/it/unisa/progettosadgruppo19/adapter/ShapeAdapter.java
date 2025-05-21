@@ -16,6 +16,7 @@ public class ShapeAdapter implements Serializable {
 
     /**
      * Costruisce un adapter estraendo i dati dalla shape originale.
+     *
      * @param shape shape da convertire
      */
     public ShapeAdapter(AbstractShape shape) {
@@ -23,8 +24,10 @@ public class ShapeAdapter implements Serializable {
         this.shapeData = convertToShapeData(shape);
     }
 
-      /**
-     * Estrae e popola un ShapeData dai parametri geometrici e di stile della shape.
+    /**
+     * Estrae e popola un ShapeData dai parametri geometrici e di stile della
+     * shape.
+     *
      * @param shape shape da cui estrarre i dati
      * @return DTO corrispondente
      */
@@ -49,9 +52,10 @@ public class ShapeAdapter implements Serializable {
                 fillColor
         );
     }
-    
+
     /**
      * Restituisce il DTO ShapeData generato.
+     *
      * @return dati serializzabili della shape
      */
     public ShapeData getShapeData() {

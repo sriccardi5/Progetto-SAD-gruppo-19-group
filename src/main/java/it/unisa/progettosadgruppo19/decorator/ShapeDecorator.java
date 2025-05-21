@@ -1,22 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package it.unisa.progettosadgruppo19.decorator;
 
 import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.Node;
 
 /**
- * Decorator astratto che inoltra tutte le chiamate
- * all'istanza decorata.
+ * Decorator astratto che inoltra tutte le chiamate all'istanza decorata.
  */
 public abstract class ShapeDecorator implements Shape {
 
     protected final Shape decorated;
-    
+
     /**
      * Costruisce un decorator su una shape esistente.
+     *
      * @param decorated shape da avvolgere
      */
     public ShapeDecorator(Shape decorated) {
