@@ -7,10 +7,18 @@ package it.unisa.progettosadgruppo19.decorator;
 import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.Node;
 
+/**
+ * Decorator astratto che inoltra tutte le chiamate
+ * all'istanza decorata.
+ */
 public abstract class ShapeDecorator implements Shape {
 
     protected final Shape decorated;
-
+    
+    /**
+     * Costruisce un decorator su una shape esistente.
+     * @param decorated shape da avvolgere
+     */
     public ShapeDecorator(Shape decorated) {
         this.decorated = decorated;
     }

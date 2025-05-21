@@ -29,6 +29,13 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Controller principale che gestisce:
+ * - selezione dello strumento (Linea, Rettangolo, Ellisse)
+ * - creazione, spostamento e ridimensionamento delle shape
+ * - salvataggio e caricamento del disegno
+ * - eliminazione di shape
+ */
 public class Controller {
 
     @FXML
@@ -84,7 +91,9 @@ public class Controller {
     private double resizeAnchorX, resizeAnchorY;
 
 
-
+    /**
+     * Imposta i listener sui controlli e inizializza l'ambiente di disegno.
+     */
     @FXML
     public void initialize() {
         
@@ -134,7 +143,12 @@ public class Controller {
             }
         });
     }
-
+    
+    /**
+     * Gestisce la pressione del mouse sul canvas per creazione, selezione
+     * o inizio di drag/resize.
+     * @param e evento MouseEvent
+     */
     private void onPressed(MouseEvent e) {    
      
      double x = e.getX(), y = e.getY();
@@ -267,6 +281,11 @@ public class Controller {
     drawingPane.getChildren().add(tempShape.getNode());
     }
 
+     /**
+     * Gestisce il trascinamento del mouse per spostare, ridimensionare
+     * o disegnare la shape in costruzione.
+     * @param e evento MouseEvent
+     */
     private void onDragged(MouseEvent e) {
         
     double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
@@ -342,6 +361,11 @@ public class Controller {
     }
     }
 
+     /**
+     * Gestisce il rilascio del mouse per completare operazioni
+     * di creazione, drag o resize.
+     * @param e evento MouseEvent
+     */
     private void onReleased(MouseEvent e) {
         
         // se ero in resize, chiudo la modalità
@@ -363,10 +387,10 @@ public class Controller {
     }
 
     /**
- * Gestisce il click sul drawingPane:
- *  - se clicco sopra una shape la seleziona
- *  - se clicco sullo sfondo deseleziona qualsiasi shape
- */
+     * Gestisce il click sul drawingPane:
+     *  - se clicco sopra una shape la seleziona
+     *  - se clicco sullo sfondo deseleziona qualsiasi shape
+     */
     @FXML
     private void onMouseClick(MouseEvent e) {
         // 1) Inizialmente tolgo ogni selezione
@@ -404,7 +428,10 @@ public class Controller {
         }
     }
 
-
+    
+    /**
+     * Salva il disegno corrente in un file binario.
+     */
     private void onSave() {
         System.out.println("Salvataggio: " + currentShapes.size() + " shape da serializzare");
         Stage stage = (Stage) saveButton.getScene().getWindow();
@@ -436,6 +463,11 @@ public class Controller {
         }
     }
 
+    /**
+     * Carica i dati da file e restituisce il DTO.
+     * @param file file binario contenente DrawingData
+     * @return DrawingData letto dal file, o null in caso di errore
+     */
     private DrawingData loadDrawingData(File file) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
             Object obj = in.readObject();
@@ -450,6 +482,12 @@ public class Controller {
         }
     }
 
+    /**
+     * Ricostruisce una shape a partire dal DTO fornito,
+     * applicando stroke e fill e inserendola in currentShapes.
+     * @param data dati della shape serializzata
+     * @return nuova istanza di Shape
+     */
     private Shape rebuildShape(ShapeData data) {
         ShapeCreator creator = switch (data.getType()) {
             case "RectangleShape" ->
@@ -474,6 +512,9 @@ public class Controller {
         return shape;
     }
 
+    /**
+     * Apre un FileChooser, carica i dati e aggiorna il canvas.
+     */
     private void onLoad() {
         Stage stage = (Stage) loadButton.getScene().getWindow();
         FileChooser chooser = new FileChooser();
@@ -506,8 +547,8 @@ public class Controller {
     }
     
     /**
- * Rimuove dal canvas e da currentShapes la shape attualmente selezionata.
- */
+     * Rimuove dal canvas e da currentShapes la shape attualmente selezionata.
+     */
     private void onDelete() {
         if (selectedShapeInstance != null) {
             // Nodo JavaFX sottostante

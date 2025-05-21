@@ -6,16 +6,28 @@ import javafx.scene.paint.Paint;
 
 import java.io.Serializable;
 
+/**
+ * Adapter che converte da AbstractShape a ShapeData per la persistenza.
+ */
 public class ShapeAdapter implements Serializable {
 
     private transient AbstractShape originalShape;
     private ShapeData shapeData;
 
+    /**
+     * Costruisce un adapter estraendo i dati dalla shape originale.
+     * @param shape shape da convertire
+     */
     public ShapeAdapter(AbstractShape shape) {
         this.originalShape = shape;
         this.shapeData = convertToShapeData(shape);
     }
 
+      /**
+     * Estrae e popola un ShapeData dai parametri geometrici e di stile della shape.
+     * @param shape shape da cui estrarre i dati
+     * @return DTO corrispondente
+     */
     private ShapeData convertToShapeData(AbstractShape shape) {
         String type = shape.getClass().getSimpleName();
         javafx.scene.shape.Shape fxNode = (javafx.scene.shape.Shape) shape.getNode();
@@ -37,7 +49,11 @@ public class ShapeAdapter implements Serializable {
                 fillColor
         );
     }
-
+    
+    /**
+     * Restituisce il DTO ShapeData generato.
+     * @return dati serializzabili della shape
+     */
     public ShapeData getShapeData() {
         return shapeData;
     }

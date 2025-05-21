@@ -7,11 +7,20 @@ package it.unisa.progettosadgruppo19.model.shapes;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 
+/**
+ * Implementazione di un'ellisse che si ridimensiona durante il drag.
+ */
 public class EllipseShape extends AbstractShape {
 
     private final double startX, startY;
     private final Ellipse e;
-
+    
+    /**
+     * Costruisce un'EllipseShape iniziale di raggio zero.
+     * @param startX coordinata X del centro iniziale
+     * @param startY coordinata Y del centro iniziale
+     * @param stroke colore del contorno
+     */
     public EllipseShape(double startX, double startY, Color stroke) {
         super(new Ellipse(startX, startY, 0, 0));
         this.startX = startX;
