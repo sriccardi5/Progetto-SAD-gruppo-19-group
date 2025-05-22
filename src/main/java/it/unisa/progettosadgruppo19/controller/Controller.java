@@ -335,16 +335,64 @@ public class Controller {
 
             Node node = selectedShapeInstance.getNode();
             if (node instanceof javafx.scene.shape.Line line) {
-                line.setStartX(origX1 + dx);
-                line.setStartY(origY1 + dy);
-                line.setEndX(origX2 + dx);
-                line.setEndY(origY2 + dy);
+                double newStartX = origX1 + dx;
+                double newStartY = origY1 + dy;
+                double newEndX = origX2 + dx;
+                double newEndY = origY2 + dy;
+
+                // Clamp all coordinates to stay within the pane
+                double minX = Math.max(0, Math.min(newStartX, newEndX));
+                double minY = Math.max(0, Math.min(newStartY, newEndY));
+                double maxX = Math.min(drawingPane.getWidth(), Math.max(newStartX, newEndX));
+                double maxY = Math.min(drawingPane.getHeight(), Math.max(newStartY, newEndY));
+
+                double deltaX = maxX - Math.max(newStartX, newEndX) + Math.min(newStartX, newEndX) - minX;
+                double deltaY = maxY - Math.max(newStartY, newEndY) + Math.min(newStartY, newEndY) - minY;
+
+                newStartX += deltaX;
+                newEndX += deltaX;
+                newStartY += deltaY;
+                newEndY += deltaY;
+
+                newStartX = origX1 + dx;
+                newStartY = origY1 + dy;
+                newEndX = origX2 + dx;
+                newEndY = origY2 + dy;
+
+// Clamp singolarmente i punti per non uscire dal drawingPane
+                newStartX = Math.max(0, Math.min(newStartX, drawingPane.getWidth()));
+                newStartY = Math.max(0, Math.min(newStartY, drawingPane.getHeight()));
+                newEndX = Math.max(0, Math.min(newEndX, drawingPane.getWidth()));
+                newEndY = Math.max(0, Math.min(newEndY, drawingPane.getHeight()));
+
+                line.setStartX(newStartX);
+                line.setStartY(newStartY);
+                line.setEndX(newEndX);
+                line.setEndY(newEndY);
+
             } else if (node instanceof javafx.scene.shape.Rectangle rect) {
-                rect.setX(origX + dx);
-                rect.setY(origY + dy);
+                double newX = origX + dx;
+                double newY = origY + dy;
+
+                // Clamp inside pane
+                newX = Math.max(0, Math.min(newX, drawingPane.getWidth() - rect.getWidth()));
+                newY = Math.max(0, Math.min(newY, drawingPane.getHeight() - rect.getHeight()));
+
+                rect.setX(newX);
+                rect.setY(newY);
             } else if (node instanceof javafx.scene.shape.Ellipse ell) {
-                ell.setCenterX(origCenterX + dx);
-                ell.setCenterY(origCenterY + dy);
+                double newCX = origCenterX + dx;
+                double newCY = origCenterY + dy;
+
+                // Clamp: center ± radius must stay within pane
+                double radiusX = ell.getRadiusX();
+                double radiusY = ell.getRadiusY();
+
+                newCX = Math.max(radiusX, Math.min(newCX, drawingPane.getWidth() - radiusX));
+                newCY = Math.max(radiusY, Math.min(newCY, drawingPane.getHeight() - radiusY));
+
+                ell.setCenterX(newCX);
+                ell.setCenterY(newCY);
             }
             return;
         }
