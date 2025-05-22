@@ -1,8 +1,8 @@
 package it.unisa.progettosadgruppo19.controller;
 
-import it.unisa.progettosadgruppo19.adapter.DrawingData;
+import it.unisa.progettosadgruppo19.model.serialization.DrawingData;
 import it.unisa.progettosadgruppo19.adapter.ShapeAdapter;
-import it.unisa.progettosadgruppo19.adapter.ShapeData;
+import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
 import it.unisa.progettosadgruppo19.model.shapes.RectangleShape;
 import it.unisa.progettosadgruppo19.model.shapes.Shape;

@@ -4,6 +4,8 @@
  */
 package it.unisa.progettosadgruppo19.controller;
 
+import it.unisa.progettosadgruppo19.model.serialization.DrawingData;
+import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
 import it.unisa.progettosadgruppo19.decorator.*;

@@ -1,5 +1,7 @@
 package it.unisa.progettosadgruppo19.adapter;
 
+import it.unisa.progettosadgruppo19.model.serialization.DrawingData;
+import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 

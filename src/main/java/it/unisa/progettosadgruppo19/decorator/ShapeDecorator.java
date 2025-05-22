@@ -38,4 +38,25 @@ public abstract class ShapeDecorator implements Shape {
     public boolean contains(double x, double y) {
         return decorated.contains(x, y);
     }
+
+    @Override
+    public double getX() {
+        return decorated.getX();
+    }
+
+    @Override
+    public double getY() {
+        return decorated.getY();
+    }
+
+    @Override
+    public double getWidth() {
+        return decorated.getWidth();
+    }
+
+    @Override
+    public double getHeight() {
+        return decorated.getHeight();
+    }
+
 }

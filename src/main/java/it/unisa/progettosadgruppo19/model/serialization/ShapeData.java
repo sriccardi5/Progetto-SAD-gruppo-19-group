@@ -1,4 +1,4 @@
-package it.unisa.progettosadgruppo19.adapter;
+package it.unisa.progettosadgruppo19.model.serialization;
 
 import java.io.Serializable;
 import javafx.scene.paint.Color;

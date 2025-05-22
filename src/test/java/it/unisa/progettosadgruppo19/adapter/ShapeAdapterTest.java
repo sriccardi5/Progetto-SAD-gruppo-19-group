@@ -1,5 +1,6 @@
 package it.unisa.progettosadgruppo19.adapter;
 
+import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.model.shapes.RectangleShape;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;

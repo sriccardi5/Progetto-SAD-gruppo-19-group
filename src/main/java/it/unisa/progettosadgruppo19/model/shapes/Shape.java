@@ -36,4 +36,9 @@ public interface Shape {
      * @return true se il punto è contenuto nella shape
      */
     boolean contains(double x, double y);
+    
+    double getX();
+    double getY();
+    double getWidth();
+    double getHeight();
 }
