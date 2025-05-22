@@ -531,8 +531,8 @@ public class Controller {
     }
 
     /**
-     * Ricostruisce una shape a partire dal DTO fornito, applicando stroke e
-     * fill e inserendola in currentShapes.
+     * Ricostruisce una shape a partire dal DTO fornito, applican stroke e
+     * fill e la inserisce in currentShapes.
      *
      * @param data dati della shape serializzata
      * @return nuova istanza di Shape
