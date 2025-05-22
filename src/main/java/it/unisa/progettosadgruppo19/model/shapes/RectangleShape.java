@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package it.unisa.progettosadgruppo19.model.shapes;
 
 import javafx.scene.paint.Color;
@@ -14,9 +10,10 @@ public class RectangleShape extends AbstractShape {
 
     private final double startX, startY;
     private final Rectangle r;
-    
+
     /**
      * Costruisce un RectangleShape iniziale di dimensione nulla.
+     *
      * @param startX coordinata X di partenza
      * @param startY coordinata Y di partenza
      * @param stroke colore del contorno

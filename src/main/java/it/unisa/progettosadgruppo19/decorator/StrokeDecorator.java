@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package it.unisa.progettosadgruppo19.decorator;
 
 import it.unisa.progettosadgruppo19.model.shapes.Shape;
@@ -14,6 +10,7 @@ public class StrokeDecorator extends ShapeDecorator {
 
     /**
      * Applica il colore di stroke alla shape decorata.
+     *
      * @param decorated shape originale
      * @param stroke colore del contorno
      */

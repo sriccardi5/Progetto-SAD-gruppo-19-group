@@ -13,14 +13,19 @@ public class ShapeAdapterTest {
     private static boolean toolkitInitialized = false;
 
     @BeforeAll
-    static void initToolkit() throws InterruptedException {
+    static void initJFX() throws InterruptedException {
         if (!toolkitInitialized) {
             CountDownLatch latch = new CountDownLatch(1);
-            Platform.startup(() -> {
+            try {
+                Platform.startup(() -> {
+                    toolkitInitialized = true;
+                    latch.countDown();
+                });
+                latch.await();
+            } catch (IllegalStateException e) {
+                // Toolkit già avviato da un altro test: lo ignoriamo
                 toolkitInitialized = true;
-                latch.countDown();
-            });
-            latch.await();
+            }
         }
     }
 

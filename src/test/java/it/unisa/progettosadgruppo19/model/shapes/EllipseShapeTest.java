@@ -1,14 +1,34 @@
 package it.unisa.progettosadgruppo19.model.shapes;
 
+import java.util.concurrent.CountDownLatch;
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
 
 public class EllipseShapeTest {
 
     private static boolean toolkitInitialized = false;
+
+    @BeforeAll
+    static void initJFX() throws InterruptedException {
+        if (!toolkitInitialized) {
+            CountDownLatch latch = new CountDownLatch(1);
+            try {
+                Platform.startup(() -> {
+                    toolkitInitialized = true;
+                    latch.countDown();
+                });
+                latch.await();
+            } catch (IllegalStateException e) {
+                // Toolkit già avviato da un altro test: lo ignoriamo
+                toolkitInitialized = true;
+            }
+        }
+    }
 
     @Test
     void testInitialProperties() {
