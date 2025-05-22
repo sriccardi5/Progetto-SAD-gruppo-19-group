@@ -1,11 +1,15 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package it.unisa.progettosadgruppo19.adapter;
 
 import java.io.Serializable;
 import javafx.scene.paint.Color;
 
 /**
- * DTO serializzabile che rappresenta una shape con tipo, posizione, dimensione
- * e colori di stroke/fill.
+ * DTO serializzabile che rappresenta una shape con tipo,
+ * posizione, dimensione e colori di stroke/fill.
  */
 public class ShapeData implements Serializable {
 
@@ -13,7 +17,7 @@ public class ShapeData implements Serializable {
     private double x, y, width, height;
     private double strokeR, strokeG, strokeB, strokeA;
     private double fillR, fillG, fillB, fillA;
-
+    
     /**
      * Costruisce un DTO a partire dai parametri forniti.
      */
@@ -34,52 +38,38 @@ public class ShapeData implements Serializable {
         this.fillB = fill.getBlue();
         this.fillA = fill.getOpacity();
     }
-
-    /**
-     * Restituisce il tipo della shape.
-     */
+    
+    /** Restituisce il tipo della shape. */
     public String getType() {
         return type;
     }
-
-    /**
-     * Restituisce la coordinata X.
-     */
+    
+    /** Restituisce la coordinata X. */
     public double getX() {
         return x;
     }
 
-    /**
-     * Restituisce la coordinata Y.
-     */
+    /** Restituisce la coordinata Y. */
     public double getY() {
         return y;
     }
 
-    /**
-     * Restituisce la larghezza.
-     */
+    /** Restituisce la larghezza. */
     public double getWidth() {
         return width;
     }
 
-    /**
-     * Restituisce l'altezza.
-     */
+    /** Restituisce l'altezza. */
     public double getHeight() {
         return height;
     }
 
-    /**
-     * Restituisce il colore di stroke ricostruito.
-     */
+    /** Restituisce il colore di stroke ricostruito. */
     public Color getStroke() {
         return new Color(strokeR, strokeG, strokeB, strokeA);
     }
 
-    /**
-     * Restituisce il colore di fill ricostruito.
-     */
+    /** Restituisce il colore di fill ricostruito. */
     public Color getFill() {
         return new Color(fillR, fillG, fillB, fillA);
     }

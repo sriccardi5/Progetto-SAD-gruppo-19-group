@@ -14,10 +14,10 @@ public class DrawingDataTest {
     void testSerializationAndDeserialization() throws Exception {
         // Crea una ShapeData con stroke e fill
         ShapeData s = new ShapeData(
-                "RectangleShape",
-                5, 5, 15, 15,
-                Color.BLACK,
-                Color.YELLOW
+            "RectangleShape",
+            5, 5, 15, 15,
+            Color.BLACK,
+            Color.YELLOW
         );
 
         DrawingData original = new DrawingData(List.of(s));

@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ConcreteShapeCreatorTest {
 
+    private static boolean toolkitInitialized = false;
+
     //"Linea" -> LineShape
     @Test
     void testLineaCreatorReturnsLineShape() {

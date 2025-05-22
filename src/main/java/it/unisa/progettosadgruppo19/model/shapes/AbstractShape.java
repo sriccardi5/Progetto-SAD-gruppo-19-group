@@ -1,11 +1,15 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package it.unisa.progettosadgruppo19.model.shapes;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
 /**
- * Classe astratta che implementa parzialmente l'interfaccia Shape, fornendo il
- * nodo JavaFX interno e la logica di contains.
+ * Classe astratta che implementa parzialmente l'interfaccia Shape,
+ * fornendo il nodo JavaFX interno e la logica di contains.
  */
 public abstract class AbstractShape implements Shape {
 
@@ -13,10 +17,10 @@ public abstract class AbstractShape implements Shape {
      * Nodo JavaFX deputato al rendering (Line, Rectangle, Ellipse).
      */
     protected final javafx.scene.shape.Shape node;
-
+    
+    
     /**
      * Costruisce una AbstractShape avvolgendo il nodo specificato.
-     *
      * @param node nodo JavaFX della forma
      */
     public AbstractShape(javafx.scene.shape.Shape node) {
@@ -24,7 +28,7 @@ public abstract class AbstractShape implements Shape {
         node.setFill(Color.TRANSPARENT);
         node.setStroke(Color.BLACK);
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -32,7 +36,7 @@ public abstract class AbstractShape implements Shape {
     public Node getNode() {
         return node;
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -40,31 +44,27 @@ public abstract class AbstractShape implements Shape {
     public boolean contains(double x, double y) {
         return node.contains(x, y);
     }
-
+    
     /**
      * Restituisce la coordinata X dell'estremo sinistro della shape.
-     *
      * @return valore X minimo
      */
     public abstract double getX();
 
     /**
      * Restituisce la coordinata Y dell'estremo superiore della shape.
-     *
      * @return valore Y minimo
      */
     public abstract double getY();
-
+    
     /**
-     * Restituisce la larghezza complessiva della shape.
-     *
-     * @return differenza orizzontale tra i bordi
-     */
+    * Restituisce la larghezza complessiva della shape.
+    * @return differenza orizzontale tra i bordi
+    */
     public abstract double getWidth();
 
-    /**
+     /**
      * Restituisce l'altezza complessiva della shape.
-     *
      * @return differenza verticale tra i bordi
      */
     public abstract double getHeight();

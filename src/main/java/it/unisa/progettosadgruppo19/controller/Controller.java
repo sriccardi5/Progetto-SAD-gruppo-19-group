@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package it.unisa.progettosadgruppo19.controller;
 
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
@@ -7,6 +11,7 @@ import it.unisa.progettosadgruppo19.model.shapes.*;
 import it.unisa.progettosadgruppo19.adapter.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,13 +25,16 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
- * Controller principale che gestisce: - selezione dello strumento (Linea,
- * Rettangolo, Ellisse) - creazione, spostamento e ridimensionamento delle shape
- * - salvataggio e caricamento del disegno - eliminazione di shape
+ * Controller principale che gestisce:
+ * - selezione dello strumento (Linea, Rettangolo, Ellisse)
+ * - creazione, spostamento e ridimensionamento delle shape
+ * - salvataggio e caricamento del disegno
+ * - eliminazione di shape
  */
 public class Controller {
 
@@ -55,13 +63,11 @@ public class Controller {
     private String selectedShape = "Linea"; // Valore di default
 
     private Shape selectedShapeInstance = null;
-
+    
     // tipo di operazione corrente
-    private enum Tool {
-        NONE, LINE, RECTANGLE, ELLIPSE
-    }
+    private enum Tool { NONE, LINE, RECTANGLE, ELLIPSE }
     private Tool currentTool = Tool.NONE;
-
+    
     private double moveAnchorX, moveAnchorY;
     // linee
     private double origX1, origY1, origX2, origY2;
@@ -69,10 +75,11 @@ public class Controller {
     private double origX, origY;
     // ellissi
     private double origCenterX, origCenterY;
-
+    
     private static final double HANDLE_RADIUS = 6.0; //arbitrarie
     private static final double ELLIPSE_BORDER_TOLERANCE = 6.0;
 
+    
     private enum ResizeMode {
         NONE,
         LINE_START, LINE_END,
@@ -83,20 +90,23 @@ public class Controller {
     private ResizeMode currentResizeMode = ResizeMode.NONE;
     private double resizeAnchorX, resizeAnchorY;
 
+
     /**
      * Imposta i listener sui controlli e inizializza l'ambiente di disegno.
      */
     @FXML
     public void initialize() {
-
+        
         saveButton.setOnAction(evt -> onSave());
         loadButton.setOnAction(evt -> onLoad());
         deleteButton.setOnAction(e -> onDelete());
-
+        
+        
+        
         lineButton.setOnAction(e -> {
-            currentTool = Tool.LINE;
-            selectedShape = "Linea";
-            selectedShapeInstance = null;
+           currentTool = Tool.LINE;
+           selectedShape = "Linea";
+           selectedShapeInstance = null;           
         });
         rectButton.setOnAction(e -> {
             currentTool = Tool.RECTANGLE;
@@ -109,6 +119,7 @@ public class Controller {
             selectedShapeInstance = null;
         });
 
+        
         strokePicker.setValue(javafx.scene.paint.Color.BLACK);
         fillPicker.setValue(javafx.scene.paint.Color.TRANSPARENT);
 
@@ -132,264 +143,253 @@ public class Controller {
             }
         });
     }
-
+    
     /**
-     * Gestisce la pressione del mouse sul canvas per creazione, selezione o
-     * inizio di drag/resize.
-     *
+     * Gestisce la pressione del mouse sul canvas per creazione, selezione
+     * o inizio di drag/resize.
      * @param e evento MouseEvent
      */
-    private void onPressed(MouseEvent e) {
+    private void onPressed(MouseEvent e) {    
+     
+     double x = e.getX(), y = e.getY();
 
-        double x = e.getX(), y = e.getY();
+    
+    if (selectedShapeInstance != null) {
+        Node node = selectedShapeInstance.getNode();
 
-        if (selectedShapeInstance != null) {
-            Node node = selectedShapeInstance.getNode();
-
-            if (node instanceof javafx.scene.shape.Line line) {
-                double sx = line.getStartX(), sy = line.getStartY();
-                double ex = line.getEndX(), ey = line.getEndY();
-                if (Math.hypot(x - sx, y - sy) < HANDLE_RADIUS) {
-                    currentResizeMode = ResizeMode.LINE_START;
-                    resizeAnchorX = ex;
-                    resizeAnchorY = ey;
-                    return;
-                }
-                if (Math.hypot(x - ex, y - ey) < HANDLE_RADIUS) {
-                    currentResizeMode = ResizeMode.LINE_END;
-                    resizeAnchorX = sx;
-                    resizeAnchorY = sy;
-                    return;
-                }
-            } else if (node instanceof javafx.scene.shape.Rectangle rect) {
-                double rx = rect.getX(), ry = rect.getY();
-                double w = rect.getWidth(), h = rect.getHeight();
-                boolean left = Math.abs(x - rx) < HANDLE_RADIUS;
-                boolean right = Math.abs(x - (rx + w)) < HANDLE_RADIUS;
-                boolean top = Math.abs(y - ry) < HANDLE_RADIUS;
-                boolean bottom = Math.abs(y - (ry + h)) < HANDLE_RADIUS;
-
-                // angoli
-                if (left && top) {
-                    currentResizeMode = ResizeMode.RECT_TOP_LEFT;
-                } else if (right && top) {
-                    currentResizeMode = ResizeMode.RECT_TOP_RIGHT;
-                } else if (left && bottom) {
-                    currentResizeMode = ResizeMode.RECT_BOTTOM_LEFT;
-                } else if (right && bottom) {
-                    currentResizeMode = ResizeMode.RECT_BOTTOM_RIGHT;
-                } // lati
-                else if (left) {
-                    currentResizeMode = ResizeMode.RECT_LEFT;
-                } else if (right) {
-                    currentResizeMode = ResizeMode.RECT_RIGHT;
-                } else if (top) {
-                    currentResizeMode = ResizeMode.RECT_TOP;
-                } else if (bottom) {
-                    currentResizeMode = ResizeMode.RECT_BOTTOM;
-                }
-
-                if (currentResizeMode != ResizeMode.NONE) {
-                    // definisco il punto opposto di ancoraggio
-                    switch (currentResizeMode) {
-                        case RECT_TOP_LEFT:
-                            resizeAnchorX = rx + w;
-                            resizeAnchorY = ry + h;
-                            break;
-                        case RECT_TOP_RIGHT:
-                            resizeAnchorX = rx;
-                            resizeAnchorY = ry + h;
-                            break;
-                        case RECT_BOTTOM_LEFT:
-                            resizeAnchorX = rx + w;
-                            resizeAnchorY = ry;
-                            break;
-                        case RECT_BOTTOM_RIGHT:
-                            resizeAnchorX = rx;
-                            resizeAnchorY = ry;
-                            break;
-                        case RECT_LEFT:
-                        case RECT_RIGHT:
-                            resizeAnchorX = (currentResizeMode == ResizeMode.RECT_LEFT ? rx + w : rx);
-                            resizeAnchorY = y;
-                            break;
-                        case RECT_TOP:
-                        case RECT_BOTTOM:
-                            resizeAnchorX = x;
-                            resizeAnchorY = (currentResizeMode == ResizeMode.RECT_TOP ? ry + h : ry);
-                            break;
-                        default:
-                            break;
-                    }
-                    return;
-                }
-            } else if (node instanceof javafx.scene.shape.Ellipse ell) {
-                double cx = ell.getCenterX(), cy = ell.getCenterY();
-                double rx = ell.getRadiusX(), ry = ell.getRadiusY();
-                double dx = (x - cx) / rx;
-                double dy = (y - cy) / ry;
-                double d = Math.hypot(dx, dy);
-                if (Math.abs(d - 1) < ELLIPSE_BORDER_TOLERANCE / Math.max(rx, ry)) {
-                    currentResizeMode = ResizeMode.ELLIPSE_BORDER;
-                    // punto opposto (riflesso)
-                    resizeAnchorX = 2 * cx - x;
-                    resizeAnchorY = 2 * cy - y;
-                    return;
-                }
+        
+        if (node instanceof javafx.scene.shape.Line line) {
+            double sx = line.getStartX(), sy = line.getStartY();
+            double ex = line.getEndX(), ey = line.getEndY();
+            if (Math.hypot(x - sx, y - sy) < HANDLE_RADIUS) {
+                currentResizeMode = ResizeMode.LINE_START;
+                resizeAnchorX = ex;  resizeAnchorY = ey;
+                return;
+            }
+            if (Math.hypot(x - ex, y - ey) < HANDLE_RADIUS) {
+                currentResizeMode = ResizeMode.LINE_END;
+                resizeAnchorX = sx;  resizeAnchorY = sy;
+                return;
             }
         }
 
-        if (currentResizeMode != ResizeMode.NONE) {
-            return;
-        }
+        
+        else if (node instanceof javafx.scene.shape.Rectangle rect) {
+            double rx = rect.getX(), ry = rect.getY();
+            double w = rect.getWidth(), h = rect.getHeight();
+            boolean left   = Math.abs(x - rx) < HANDLE_RADIUS;
+            boolean right  = Math.abs(x - (rx + w)) < HANDLE_RADIUS;
+            boolean top    = Math.abs(y - ry) < HANDLE_RADIUS;
+            boolean bottom = Math.abs(y - (ry + h)) < HANDLE_RADIUS;
 
-        if (selectedShapeInstance != null) {
-            moveAnchorX = e.getX();
-            moveAnchorY = e.getY();
+            // angoli
+            if (left && top)    currentResizeMode = ResizeMode.RECT_TOP_LEFT;
+            else if (right && top)   currentResizeMode = ResizeMode.RECT_TOP_RIGHT;
+            else if (left && bottom) currentResizeMode = ResizeMode.RECT_BOTTOM_LEFT;
+            else if (right && bottom)currentResizeMode = ResizeMode.RECT_BOTTOM_RIGHT;
+            // lati
+            else if (left)   currentResizeMode = ResizeMode.RECT_LEFT;
+            else if (right)  currentResizeMode = ResizeMode.RECT_RIGHT;
+            else if (top)    currentResizeMode = ResizeMode.RECT_TOP;
+            else if (bottom) currentResizeMode = ResizeMode.RECT_BOTTOM;
 
-            Node node = selectedShapeInstance.getNode();
-            if (node instanceof javafx.scene.shape.Line line) {
-                origX1 = line.getStartX();
-                origY1 = line.getStartY();
-                origX2 = line.getEndX();
-                origY2 = line.getEndY();
-            } else if (node instanceof javafx.scene.shape.Rectangle rect) {
-                origX = rect.getX();
-                origY = rect.getY();
-            } else if (node instanceof javafx.scene.shape.Ellipse ell) {
-                origCenterX = ell.getCenterX();
-                origCenterY = ell.getCenterY();
+            if (currentResizeMode != ResizeMode.NONE) {
+                // definisco il punto opposto di ancoraggio
+                switch (currentResizeMode) {
+                    case RECT_TOP_LEFT:
+                        resizeAnchorX = rx + w;  resizeAnchorY = ry + h; break;
+                    case RECT_TOP_RIGHT:
+                        resizeAnchorX = rx;      resizeAnchorY = ry + h; break;
+                    case RECT_BOTTOM_LEFT:
+                        resizeAnchorX = rx + w;  resizeAnchorY = ry;     break;
+                    case RECT_BOTTOM_RIGHT:
+                        resizeAnchorX = rx;      resizeAnchorY = ry;     break;
+                    case RECT_LEFT:
+                    case RECT_RIGHT:
+                        resizeAnchorX = (currentResizeMode==ResizeMode.RECT_LEFT? rx + w : rx);
+                        resizeAnchorY = y; break;
+                    case RECT_TOP:
+                    case RECT_BOTTOM:
+                        resizeAnchorX = x;
+                        resizeAnchorY = (currentResizeMode==ResizeMode.RECT_TOP? ry + h : ry);
+                        break;
+                    default: break;
+                }
+                return;
             }
-            return;
         }
 
-        if (currentTool == Tool.NONE) {
-            return;
+        
+        else if (node instanceof javafx.scene.shape.Ellipse ell) {
+            double cx = ell.getCenterX(), cy = ell.getCenterY();
+            double rx = ell.getRadiusX(), ry = ell.getRadiusY();
+            double dx = (x - cx) / rx;
+            double dy = (y - cy) / ry;
+            double d  = Math.hypot(dx, dy);
+            if (Math.abs(d - 1) < ELLIPSE_BORDER_TOLERANCE / Math.max(rx, ry)) {
+                currentResizeMode = ResizeMode.ELLIPSE_BORDER;
+                // punto opposto (riflesso)
+                resizeAnchorX = 2*cx - x;
+                resizeAnchorY = 2*cy - y;
+                return;
+            }
         }
-
-        System.out.println("onPressed chiamato");
-        ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
-        AbstractShape concrete = (AbstractShape) creator.create(e.getX(), e.getY(), strokePicker.getValue());
-        currentShapes.add(concrete);
-        System.out.println("Aggiunta shape a currentShapes: " + concrete.getClass().getSimpleName());
-
-        tempShape = new StrokeDecorator(concrete, strokePicker.getValue());
-        tempShape = new FillDecorator(tempShape, fillPicker.getValue());
-        tempShape.getNode().setUserData(tempShape);
-        drawingPane.getChildren().add(tempShape.getNode());
     }
 
-    /**
-     * Gestisce il trascinamento del mouse per spostare, ridimensionare o
-     * disegnare la shape in costruzione.
-     *
+    
+    if (currentResizeMode != ResizeMode.NONE) {
+        return;
+    }   
+
+
+    
+    if (selectedShapeInstance != null) {
+        moveAnchorX = e.getX();
+        moveAnchorY = e.getY();
+
+        Node node = selectedShapeInstance.getNode();
+        if (node instanceof javafx.scene.shape.Line line) {
+            origX1 = line.getStartX();
+            origY1 = line.getStartY();
+            origX2 = line.getEndX();
+            origY2 = line.getEndY();
+        } else if (node instanceof javafx.scene.shape.Rectangle rect) {
+            origX = rect.getX();
+            origY = rect.getY();
+        } else if (node instanceof javafx.scene.shape.Ellipse ell) {
+            origCenterX = ell.getCenterX();
+            origCenterY = ell.getCenterY();
+        }
+        return;
+    }
+
+    
+    if (currentTool == Tool.NONE) {
+        return;
+    }
+
+    
+    System.out.println("onPressed chiamato");
+    ShapeCreator creator = ConcreteShapeCreator.getCreator(selectedShape);
+    AbstractShape concrete = (AbstractShape) creator.create(e.getX(), e.getY(), strokePicker.getValue());
+    currentShapes.add(concrete);
+    System.out.println("Aggiunta shape a currentShapes: " + concrete.getClass().getSimpleName());
+
+    tempShape = new StrokeDecorator(concrete, strokePicker.getValue());
+    tempShape = new FillDecorator(tempShape, fillPicker.getValue());
+    tempShape.getNode().setUserData(tempShape);
+    drawingPane.getChildren().add(tempShape.getNode());
+    }
+
+     /**
+     * Gestisce il trascinamento del mouse per spostare, ridimensionare
+     * o disegnare la shape in costruzione.
      * @param e evento MouseEvent
      */
     private void onDragged(MouseEvent e) {
+        
+    double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
+    double y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
 
-        double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
-        double y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
-
-        if (selectedShapeInstance != null && currentResizeMode != ResizeMode.NONE) {
-            Node node = selectedShapeInstance.getNode();
-            switch (currentResizeMode) {
-                case LINE_START -> {
-                    javafx.scene.shape.Line l = (javafx.scene.shape.Line) node;
-                    l.setStartX(x);
-                    l.setStartY(y);
-                }
-                case LINE_END -> {
-                    javafx.scene.shape.Line l = (javafx.scene.shape.Line) node;
-                    l.setEndX(x);
-                    l.setEndY(y);
-                }
-                case RECT_TOP_LEFT, RECT_TOP_RIGHT, RECT_BOTTOM_LEFT, RECT_BOTTOM_RIGHT, RECT_LEFT, RECT_RIGHT, RECT_TOP, RECT_BOTTOM -> {
-                    javafx.scene.shape.Rectangle r = (javafx.scene.shape.Rectangle) node;
-                    double newX = Math.min(x, resizeAnchorX);
-                    double newY = Math.min(y, resizeAnchorY);
-                    double newW = Math.abs(resizeAnchorX - x);
-                    double newH = Math.abs(resizeAnchorY - y);
-                    r.setX(newX);
-                    r.setY(newY);
-                    r.setWidth(newW);
-                    r.setHeight(newH);
-                }
-                case ELLIPSE_BORDER -> {
-                    javafx.scene.shape.Ellipse ell = (javafx.scene.shape.Ellipse) node;
-                    double cx = (x + resizeAnchorX) / 2;
-                    double cy = (y + resizeAnchorY) / 2;
-                    ell.setCenterX(cx);
-                    ell.setCenterY(cy);
-                    ell.setRadiusX(Math.abs(x - resizeAnchorX) / 2);
-                    ell.setRadiusY(Math.abs(y - resizeAnchorY) / 2);
-                }
-                default -> {
-                }
+    
+    if (selectedShapeInstance != null && currentResizeMode != ResizeMode.NONE) {
+        Node node = selectedShapeInstance.getNode();
+        switch (currentResizeMode) {
+            case LINE_START -> {
+                javafx.scene.shape.Line l = (javafx.scene.shape.Line) node;
+                l.setStartX(x);  l.setStartY(y);
             }
-            return;
-        }
-
-        if (selectedShapeInstance != null) {
-            double dx = e.getX() - moveAnchorX;
-            double dy = e.getY() - moveAnchorY;
-
-            Node node = selectedShapeInstance.getNode();
-            if (node instanceof javafx.scene.shape.Line line) {
-                line.setStartX(origX1 + dx);
-                line.setStartY(origY1 + dy);
-                line.setEndX(origX2 + dx);
-                line.setEndY(origY2 + dy);
-            } else if (node instanceof javafx.scene.shape.Rectangle rect) {
-                rect.setX(origX + dx);
-                rect.setY(origY + dy);
-            } else if (node instanceof javafx.scene.shape.Ellipse ell) {
-                ell.setCenterX(origCenterX + dx);
-                ell.setCenterY(origCenterY + dy);
+            case LINE_END -> {
+                javafx.scene.shape.Line l = (javafx.scene.shape.Line) node;
+                l.setEndX(x);    l.setEndY(y);
             }
-            return;
+            case RECT_TOP_LEFT, RECT_TOP_RIGHT, RECT_BOTTOM_LEFT, RECT_BOTTOM_RIGHT,
+                 RECT_LEFT, RECT_RIGHT, RECT_TOP, RECT_BOTTOM -> {
+                javafx.scene.shape.Rectangle r = (javafx.scene.shape.Rectangle) node;
+                double newX = Math.min(x, resizeAnchorX);
+                double newY = Math.min(y, resizeAnchorY);
+                double newW = Math.abs(resizeAnchorX - x);
+                double newH = Math.abs(resizeAnchorY - y);
+                r.setX(newX);  r.setY(newY);
+                r.setWidth(newW);  r.setHeight(newH);
+            }
+            case ELLIPSE_BORDER -> {
+                javafx.scene.shape.Ellipse ell = (javafx.scene.shape.Ellipse) node;
+                double cx = (x + resizeAnchorX) / 2;
+                double cy = (y + resizeAnchorY) / 2;
+                ell.setCenterX(cx);
+                ell.setCenterY(cy);
+                ell.setRadiusX(Math.abs(x - resizeAnchorX) / 2);
+                ell.setRadiusY(Math.abs(y - resizeAnchorY) / 2);
+            }
+            default -> { }
         }
+        return;
+    }    
+        
+    if (selectedShapeInstance != null) {
+        double dx = e.getX() - moveAnchorX;
+        double dy = e.getY() - moveAnchorY;
 
-        if (currentTool == Tool.NONE) {
-            return;
+        Node node = selectedShapeInstance.getNode();
+        if (node instanceof javafx.scene.shape.Line line) {
+            line.setStartX(origX1 + dx);
+            line.setStartY(origY1 + dy);
+            line.setEndX(origX2 + dx);
+            line.setEndY(origY2 + dy);
+        } else if (node instanceof javafx.scene.shape.Rectangle rect) {
+            rect.setX(origX + dx);
+            rect.setY(origY + dy);
+        } else if (node instanceof javafx.scene.shape.Ellipse ell) {
+            ell.setCenterX(origCenterX + dx);
+            ell.setCenterY(origCenterY + dy);
         }
-
-        if (tempShape != null) {
-            System.out.println("onDragged: " + e.getX() + "," + e.getY());
-            x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
-            y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
-            tempShape.onDrag(x, y);
-        }
+        return;
     }
 
-    /**
-     * Gestisce il rilascio del mouse per completare operazioni di creazione,
-     * drag o resize.
-     *
+    
+    if (currentTool == Tool.NONE) {
+        return;
+    }
+
+    
+    if (tempShape != null) {
+        System.out.println("onDragged: " + e.getX() + "," + e.getY());
+        x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
+        y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
+        tempShape.onDrag(x, y);
+    }
+    }
+
+     /**
+     * Gestisce il rilascio del mouse per completare operazioni
+     * di creazione, drag o resize.
      * @param e evento MouseEvent
      */
     private void onReleased(MouseEvent e) {
-
+        
         // se ero in resize, chiudo la modalità
-        if (currentResizeMode != ResizeMode.NONE) {
-            currentResizeMode = ResizeMode.NONE;
-            return;
-        }
-
+    if (currentResizeMode != ResizeMode.NONE) {
+        currentResizeMode = ResizeMode.NONE;
+        return;
+    }
+        
         // se stavo spostando, termino il drag
-        if (selectedShapeInstance != null) {
-            return;
-        }
-        // se non c’è tool attivo, esco
-        if (currentTool == Tool.NONE) {
-            return;
-        }
-        // altrimenti termino la creazione della shape
-        tempShape = null;
+    if (selectedShapeInstance != null) {
+        return;
+    }
+    // se non c’è tool attivo, esco
+    if (currentTool == Tool.NONE) {
+        return;
+    }
+    // altrimenti termino la creazione della shape
+    tempShape = null;
     }
 
     /**
-     * Gestisce il click sul drawingPane: - se clicco sopra una shape la
-     * seleziona - se clicco sullo sfondo deseleziona qualsiasi shape
+     * Gestisce il click sul drawingPane:
+     *  - se clicco sopra una shape la seleziona
+     *  - se clicco sullo sfondo deseleziona qualsiasi shape
      */
     @FXML
     private void onMouseClick(MouseEvent e) {
@@ -428,6 +428,7 @@ public class Controller {
         }
     }
 
+    
     /**
      * Salva il disegno corrente in un file binario.
      */
@@ -464,7 +465,6 @@ public class Controller {
 
     /**
      * Carica i dati da file e restituisce il DTO.
-     *
      * @param file file binario contenente DrawingData
      * @return DrawingData letto dal file, o null in caso di errore
      */
@@ -483,9 +483,8 @@ public class Controller {
     }
 
     /**
-     * Ricostruisce una shape a partire dal DTO fornito, applicando stroke e
-     * fill e inserendola in currentShapes.
-     *
+     * Ricostruisce una shape a partire dal DTO fornito,
+     * applicando stroke e fill e inserendola in currentShapes.
      * @param data dati della shape serializzata
      * @return nuova istanza di Shape
      */
@@ -546,7 +545,7 @@ public class Controller {
             }
         }
     }
-
+    
     /**
      * Rimuove dal canvas e da currentShapes la shape attualmente selezionata.
      */
@@ -554,16 +553,17 @@ public class Controller {
         if (selectedShapeInstance != null) {
             // Nodo JavaFX sottostante
             Node node = selectedShapeInstance.getNode();
-
+        
             // Rimuovi dal Pane
             drawingPane.getChildren().remove(node);
-
+        
             // Rimuovi dall'elenco delle shape “concrete”
             currentShapes.removeIf(shape -> shape.getNode().equals(node));
-
+        
             // Deseleziona
             selectedShapeInstance = null;
         }
-    }
+    } 
+
 
 }

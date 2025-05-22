@@ -1,36 +1,37 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
 package it.unisa.progettosadgruppo19.model.shapes;
 
 /**
  * Interfaccia che definisce il comportamento di base di una forma geometrica.
  */
+
 import javafx.scene.Node;
 
 public interface Shape {
-
     /**
      * Restituisce il nodo JavaFX associato alla shape.
-     *
      * @return il nodo JavaFX della shape
      */
     Node getNode();
-
+    
     /**
      * Eseguito durante il trascinamento del mouse.
-     *
      * @param x nuova coordinata X del puntatore
      * @param y nuova coordinata Y del puntatore
      */
     void onDrag(double x, double y);
-
+    
     /**
      * Eseguito al rilascio del mouse dopo un drag.
      */
     void onRelease();
-
+    
     /**
-     * Verifica se il punto (x,y) si trova al di dentro dell'area occupata dalla
-     * shape.
-     *
+     * Verifica se il punto (x,y) si trova al di dentro
+     * dell'area occupata dalla shape.
      * @param x coordinata X del punto di test
      * @param y coordinata Y del punto di test
      * @return true se il punto è contenuto nella shape
