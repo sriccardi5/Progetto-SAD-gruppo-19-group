@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 import java.io.Serializable;
-
+// commento di prova
 /**
  * Adapter che converte da AbstractShape a ShapeData per la persistenza.
  */
