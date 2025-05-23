@@ -20,13 +20,13 @@ public class ConcreteShapeCreator {
     public static ShapeCreator getCreator(String tipo) {
         return switch (tipo) {
             case "Linea" ->
-                LineShape::new;
+                new LineShapeCreator();
             case "Rettangolo" ->
-                RectangleShape::new;
+                new RectangleShapeCreator();
             case "Ellisse" ->
-                EllipseShape::new;
+                new EllipseShapeCreator();
             default ->
-                throw new IllegalArgumentException("Tipo non supportato");
+                throw new IllegalArgumentException("Tipo non supportato: " + tipo);
         };
     }
 }

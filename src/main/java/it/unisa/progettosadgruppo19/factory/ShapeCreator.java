@@ -4,10 +4,9 @@ import it.unisa.progettosadgruppo19.model.shapes.Shape;
 import javafx.scene.paint.Color;
 
 /**
- * Interfaccia funzionale per creare shape usando un metodo factory.
+ * Classe astratta che definisce il metodo factory.
  */
-@FunctionalInterface
-public interface ShapeCreator {
+public abstract class ShapeCreator {
 
     /**
      * Crea una nuova shape a partire da coordinate e colore.
@@ -17,5 +16,5 @@ public interface ShapeCreator {
      * @param stroke colore del contorno
      * @return nuova istanza di Shape
      */
-    Shape create(double startX, double startY, Color stroke);
+    public abstract Shape createShape(double startX, double startY, Color stroke);
 }

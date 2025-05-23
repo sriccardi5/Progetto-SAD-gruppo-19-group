@@ -11,7 +11,7 @@ public class ConcreteShapeCreatorTest {
     @Test
     void testLineaCreatorReturnsLineShape() {
         ShapeCreator creator = ConcreteShapeCreator.getCreator("Linea");
-        Shape shape = creator.create(0, 0, Color.BLACK);
+        Shape shape = creator.createShape(0, 0, Color.BLACK);
         assertTrue(shape instanceof LineShape);
     }
 
@@ -19,7 +19,7 @@ public class ConcreteShapeCreatorTest {
     @Test
     void testRettangoloCreatorReturnsRectangleShape() {
         ShapeCreator creator = ConcreteShapeCreator.getCreator("Rettangolo");
-        Shape shape = creator.create(0, 0, Color.BLACK);
+        Shape shape = creator.createShape(0, 0, Color.BLACK);
         assertTrue(shape instanceof RectangleShape);
     }
 
@@ -27,7 +27,7 @@ public class ConcreteShapeCreatorTest {
     @Test
     void testEllisseCreatorReturnsEllipseShape() {
         ShapeCreator creator = ConcreteShapeCreator.getCreator("Ellisse");
-        Shape shape = creator.create(0, 0, Color.BLACK);
+        Shape shape = creator.createShape(0, 0, Color.BLACK);
         assertTrue(shape instanceof EllipseShape);
     }
 
