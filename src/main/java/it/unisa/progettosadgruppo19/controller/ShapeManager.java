@@ -48,6 +48,5 @@ public class ShapeManager {
                 .findFirst()
                 .orElse(null);
     }
-    
-    System.out.println("PROVA");
+ 
 }
