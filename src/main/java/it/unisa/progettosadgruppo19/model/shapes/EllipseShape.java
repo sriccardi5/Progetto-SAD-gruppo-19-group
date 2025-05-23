@@ -6,7 +6,7 @@ import javafx.scene.shape.Ellipse;
 /**
  * Implementazione di un'ellisse che si ridimensiona durante il drag.
  */
-public class EllipseShape extends AbstractShape {
+public class EllipseShape extends AbstractShape implements Shape {
 
     private final double startX, startY;
     private final Ellipse e;
@@ -26,9 +26,25 @@ public class EllipseShape extends AbstractShape {
         e.setStroke(stroke);
     }
 
+    /**
+     * Costruttore alternativo usato per il clone.
+     *
+     * @param centerX coordinata X centro
+     * @param centerY coordinata Y centro
+     * @param radiusX raggio orizzontale
+     * @param radiusY raggio verticale
+     * @param stroke colore del contorno
+     */
+    public EllipseShape(double centerX, double centerY, double radiusX, double radiusY, Color stroke) {
+        super(new Ellipse(centerX, centerY, radiusX, radiusY));
+        this.startX = centerX;
+        this.startY = centerY;
+        this.e = (Ellipse) node;
+        e.setStroke(stroke);
+    }
+
     @Override
     public void onDrag(double x, double y) {
-        Ellipse e = (Ellipse) node;
         e.setCenterX((startX + x) / 2);
         e.setCenterY((startY + y) / 2);
         e.setRadiusX(Math.abs(x - startX) / 2);
@@ -59,4 +75,19 @@ public class EllipseShape extends AbstractShape {
         return e.getRadiusY() * 2;
     }
 
+    @Override
+    public AbstractShape clone() {
+        Ellipse ell = (Ellipse) this.node;
+        EllipseShape clone = new EllipseShape(
+            ell.getCenterX(),
+            ell.getCenterY(),
+            ell.getRadiusX(),
+            ell.getRadiusY(),
+            (Color) ell.getStroke()
+        );
+        clone.e.setFill(ell.getFill());
+        clone.e.setTranslateX(ell.getTranslateX());
+        clone.e.setTranslateY(ell.getTranslateY());
+        return clone;
+    }
 }

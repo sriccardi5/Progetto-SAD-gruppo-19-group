@@ -1,12 +1,14 @@
 package it.unisa.progettosadgruppo19.decorator;
 
+import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
 import it.unisa.progettosadgruppo19.model.shapes.Shape;
+import java.io.Serializable;
 import javafx.scene.Node;
 
 /**
  * Decorator astratto che inoltra tutte le chiamate all'istanza decorata.
  */
-public abstract class ShapeDecorator implements Shape {
+public abstract class ShapeDecorator implements Shape, Serializable {
 
     protected final Shape decorated;
 
@@ -57,6 +59,31 @@ public abstract class ShapeDecorator implements Shape {
     @Override
     public double getHeight() {
         return decorated.getHeight();
+    }
+    
+    public Shape getWrapped() {
+        return decorated;
+    }
+
+    @Override
+    public Shape clone() {
+        Shape baseClone = unwrapToAbstract(decorated).clone(); // clone della forma base
+        return recreateWith(baseClone);
+    }
+
+    
+    protected abstract Shape recreateWith(Shape newInner);
+    
+    private AbstractShape unwrapToAbstract(Shape shape) {
+        while (shape instanceof ShapeDecorator) {
+            shape = ((ShapeDecorator) shape).decorated;
+        }
+        return (AbstractShape) shape;
+    }
+    
+    @Override
+    public void moveBy(double dx, double dy) {
+        decorated.moveBy(dx, dy);
     }
 
 }

@@ -2,8 +2,6 @@ package it.unisa.progettosadgruppo19.controller;
 
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.BeforeAll;

@@ -1,18 +1,15 @@
 package it.unisa.progettosadgruppo19.controller;
 
-import it.unisa.progettosadgruppo19.adapter.ShapeAdapter;
 import it.unisa.progettosadgruppo19.decorator.FillDecorator;
+import it.unisa.progettosadgruppo19.decorator.ShapeDecorator;
 import it.unisa.progettosadgruppo19.decorator.StrokeDecorator;
-import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
-import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.model.serialization.DrawingData;
 import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
-import it.unisa.progettosadgruppo19.model.shapes.Shape;
+import it.unisa.progettosadgruppo19.model.shapes.*;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -30,6 +27,8 @@ public class Controller {
     private Button lineButton, rectButton, ellipseButton, saveButton, loadButton, deleteButton;
     @FXML
     private ColorPicker strokePicker, fillPicker;
+    @FXML
+    private Button copyButton;
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
     private MouseEventHandler mouseHandler;
@@ -53,6 +52,9 @@ public class Controller {
         lineButton.setOnAction(e -> setTool("Linea"));
         rectButton.setOnAction(e -> setTool("Rettangolo"));
         ellipseButton.setOnAction(e -> setTool("Ellisse"));
+        
+        copyButton.setOnAction(evt -> onCopy());
+
 
         strokePicker.setOnAction(e -> {
             Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -152,4 +154,50 @@ public class Controller {
             mouseHandler.setSelectedShapeInstance(null);
         }
     }
-}
+    
+    private AbstractShape unwrapToAbstract(Shape shape) {
+        while (shape instanceof ShapeDecorator) {
+            shape = ((ShapeDecorator) shape).getWrapped();
+        }
+        if (shape instanceof AbstractShape) {
+            return (AbstractShape) shape;
+        } else {
+            throw new IllegalStateException("Shape non è un AbstractShape dopo l'unwrapping");
+        }
+    }
+
+
+    
+    private void onCopy() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            // Clona la shape, incluso eventuali decorator
+            Shape copied = selected.clone();
+
+            // Sposta leggermente la copia per distinguere visivamente
+            copied.moveBy(10, 10);
+
+            // Aggiunge la nuova forma alla UI
+            drawingPane.getChildren().add(copied.getNode());
+
+            // Estrai l'AbstractShape base (senza decorator) per la logica
+            AbstractShape baseShape = unwrapToAbstract(copied);
+            currentShapes.add(baseShape);
+
+            // Se vuoi selezionare subito la copia:
+            mouseHandler.setSelectedShapeInstance(copied);
+            
+                    // 🔍 Stampa di controllo
+                System.out.println("Figura copiata: " + copied.getClass().getSimpleName() +
+                                   " | X: " + copied.getX() +
+                                   " | Y: " + copied.getY());
+            } else {
+                System.out.println("Nessuna figura selezionata da copiare.");
+            }
+            
+            
+            
+        }
+    }
+
+

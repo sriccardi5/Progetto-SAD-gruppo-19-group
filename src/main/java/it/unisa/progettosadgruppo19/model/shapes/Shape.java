@@ -41,4 +41,8 @@ public interface Shape {
     double getY();
     double getWidth();
     double getHeight();
+
+    Shape clone();
+    
+    void moveBy(double dx, double dy);
 }

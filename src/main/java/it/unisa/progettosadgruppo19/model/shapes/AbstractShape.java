@@ -1,5 +1,10 @@
 package it.unisa.progettosadgruppo19.model.shapes;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
@@ -68,4 +73,17 @@ public abstract class AbstractShape implements Shape {
      * @return differenza verticale tra i bordi
      */
     public abstract double getHeight();
+    
+    
+    @Override
+    public abstract AbstractShape clone(); // Sarà implementato dalle sottoclassi
+
+
+    
+    public void moveBy(double dx, double dy) {
+    javafx.scene.shape.Shape node = (javafx.scene.shape.Shape) getNode();
+    node.setTranslateX(node.getTranslateX() + dx);
+    node.setTranslateY(node.getTranslateY() + dy);
+}
+
 }
