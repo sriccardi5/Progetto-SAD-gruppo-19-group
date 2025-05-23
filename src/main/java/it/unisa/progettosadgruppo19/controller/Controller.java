@@ -161,7 +161,7 @@ drawingPane.setOnMouseClicked(e -> {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("[DEBUG] Nessun file selezionato, salvataggio annullato.");
+            System.out.println("[DEBUG] Nessun file selezionato, salvataggio annullato.");//prova
         }
     }
 
