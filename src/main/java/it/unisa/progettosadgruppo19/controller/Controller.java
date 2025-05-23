@@ -4,13 +4,13 @@
  */
 package it.unisa.progettosadgruppo19.controller;
 
-import it.unisa.progettosadgruppo19.model.serialization.DrawingData;
-import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.factory.ShapeCreator;
 import it.unisa.progettosadgruppo19.factory.ConcreteShapeCreator;
 import it.unisa.progettosadgruppo19.decorator.*;
 import it.unisa.progettosadgruppo19.model.shapes.*;
 import it.unisa.progettosadgruppo19.adapter.*;
+import it.unisa.progettosadgruppo19.model.serialization.DrawingData;
+import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -156,6 +155,7 @@ public class Controller {
      * @param e evento MouseEvent
      */
     
+    //Calcolo distanza linea
     private boolean isNearLine(double px, double py, double x1, double y1, double x2, double y2, double tolerance) {
         double dx = x2 - x1;
         double dy = y2 - y1;
@@ -177,35 +177,18 @@ public class Controller {
 
     private void onPressed(MouseEvent e) {    
      
-     double x = e.getX(), y = e.getY();
-
+    double x = e.getX(), y = e.getY();
     
-     // PRIMA di tutto: cerca una linea vicina e selezionala
-    for (AbstractShape shape : currentShapes) {
-        Node node = shape.getNode();
-        if (node instanceof Line line) {
-            double sx = line.getStartX(), sy = line.getStartY();
-            double ex = line.getEndX(), ey = line.getEndY();
-            if (isNearLine(x, y, sx, sy, ex, ey, HANDLE_RADIUS)) {
-                selectedShapeInstance = shape;
-                moveAnchorX = x;
-                moveAnchorY = y;
-                origX1 = sx; origY1 = sy;
-                origX2 = ex; origY2 = ey;
-                return;
-            }
-        }
-    }
-
-     
+    // 1. Verifica se una shape è già selezionata
     if (selectedShapeInstance != null) {
         Node node = selectedShapeInstance.getNode();
 
-        
+        // ===LINE===
         if (node instanceof javafx.scene.shape.Line line) {
             double sx = line.getStartX(), sy = line.getStartY();
             double ex = line.getEndX(), ey = line.getEndY();
             
+            // Tentativo di resize sugli estremi
             if (Math.hypot(x - sx, y - sy) < HANDLE_RADIUS) {
                 currentResizeMode = ResizeMode.LINE_START;
                 resizeAnchorX = ex;  resizeAnchorY = ey;
@@ -216,22 +199,9 @@ public class Controller {
                 resizeAnchorX = sx;  resizeAnchorY = sy;
                 return;
             }
-            
-            // NUOVA PARTE: selezione della linea se si clicca vicino al segmento
-            if (isNearLine(x, y, sx, sy, ex, ey, HANDLE_RADIUS)) {
-                // attiva drag della linea intera (non resize)
-                moveAnchorX = x;
-                moveAnchorY = y;
-                origX1 = sx; origY1 = sy;
-                origX2 = ex; origY2 = ey;
-                return;
-            }
-            
         }
-        
-        
-
-        
+            
+        // ===RECTANGLE===
         else if (node instanceof javafx.scene.shape.Rectangle rect) {
             double rx = rect.getX(), ry = rect.getY();
             double w = rect.getWidth(), h = rect.getHeight();
@@ -263,13 +233,20 @@ public class Controller {
                     case RECT_BOTTOM_RIGHT:
                         resizeAnchorX = rx;      resizeAnchorY = ry;     break;
                     case RECT_LEFT:
+                        resizeAnchorX = rx + w;
+                        resizeAnchorY = ry + h / 2;
+                        break;
                     case RECT_RIGHT:
-                        resizeAnchorX = (currentResizeMode==ResizeMode.RECT_LEFT? rx + w : rx);
-                        resizeAnchorY = y; break;
+                        resizeAnchorX = rx;
+                        resizeAnchorY = ry + h / 2;
+                        break;
                     case RECT_TOP:
+                        resizeAnchorX = rx + w / 2;
+                        resizeAnchorY = ry + h;
+                        break;
                     case RECT_BOTTOM:
-                        resizeAnchorX = x;
-                        resizeAnchorY = (currentResizeMode==ResizeMode.RECT_TOP? ry + h : ry);
+                        resizeAnchorX = rx + w / 2;
+                        resizeAnchorY = ry;
                         break;
                     default: break;
                 }
@@ -277,7 +254,7 @@ public class Controller {
             }
         }
 
-        
+        // ===ELLIPSE===
         else if (node instanceof javafx.scene.shape.Ellipse ell) {
             double cx = ell.getCenterX(), cy = ell.getCenterY();
             double rx = ell.getRadiusX(), ry = ell.getRadiusY();
@@ -287,20 +264,36 @@ public class Controller {
             if (Math.abs(d - 1) < ELLIPSE_BORDER_TOLERANCE / Math.max(rx, ry)) {
                 currentResizeMode = ResizeMode.ELLIPSE_BORDER;
                 // punto opposto (riflesso)
-                resizeAnchorX = 2*cx - x;
-                resizeAnchorY = 2*cy - y;
+                resizeAnchorX = cx - (x - cx);
+                resizeAnchorY = cy - (y - cy);
                 return;
             }
         }
     }
-
     
+    // 2. Se non si è in modalità resize, controlla se clicchiamo vicino a una linea per selezionarla
+    for (AbstractShape shape : currentShapes) {
+        Node node = shape.getNode();
+        if (node instanceof Line line) {
+            double sx = line.getStartX(), sy = line.getStartY();
+            double ex = line.getEndX(), ey = line.getEndY();
+            if (isNearLine(x, y, sx, sy, ex, ey, HANDLE_RADIUS)) {
+                selectedShapeInstance = shape;
+                moveAnchorX = x;
+                moveAnchorY = y;
+                origX1 = sx; origY1 = sy;
+                origX2 = ex; origY2 = ey;
+                return;
+            }
+        }
+    }
+    
+    // Se si è in modalità resize, non fare altro
     if (currentResizeMode != ResizeMode.NONE) {
         return;
     }   
 
-
-    
+    // Se c'è una figura selezionata, preparati al drag (spostamento)
     if (selectedShapeInstance != null) {
         moveAnchorX = e.getX();
         moveAnchorY = e.getY();
@@ -321,7 +314,7 @@ public class Controller {
         return;
     }
 
-    
+    // Se non c'è una figura selezionata, e si ha un tool attivo, crea una nuova figura
     if (currentTool == Tool.NONE) {
         return;
     }
@@ -362,7 +355,7 @@ public class Controller {
                     l.setEndX(x);
                     l.setEndY(y);
                 }
-                case RECT_TOP_LEFT, RECT_TOP_RIGHT, RECT_BOTTOM_LEFT, RECT_BOTTOM_RIGHT, RECT_LEFT, RECT_RIGHT, RECT_TOP, RECT_BOTTOM -> {
+                case RECT_TOP_LEFT, RECT_TOP_RIGHT, RECT_BOTTOM_LEFT, RECT_BOTTOM_RIGHT -> {
                     javafx.scene.shape.Rectangle r = (javafx.scene.shape.Rectangle) node;
                     double newX = Math.min(x, resizeAnchorX);
                     double newY = Math.min(y, resizeAnchorY);
@@ -373,15 +366,42 @@ public class Controller {
                     r.setWidth(newW);
                     r.setHeight(newH);
                 }
+                case RECT_LEFT, RECT_RIGHT -> {
+                    javafx.scene.shape.Rectangle r = (javafx.scene.shape.Rectangle) node;
+                    double newX = Math.min(x, resizeAnchorX);
+                    double newW = Math.abs(resizeAnchorX - x);
+                    r.setX(newX);
+                    r.setWidth(newW);
+                }
+                case RECT_TOP, RECT_BOTTOM -> {
+                    javafx.scene.shape.Rectangle r = (javafx.scene.shape.Rectangle) node;
+                    double newY = Math.min(y, resizeAnchorY);
+                    double newH = Math.abs(resizeAnchorY - y);
+                    r.setY(newY);
+                    r.setHeight(newH);
+                }
+
                 case ELLIPSE_BORDER -> {
                     javafx.scene.shape.Ellipse ell = (javafx.scene.shape.Ellipse) node;
-                    double cx = (x + resizeAnchorX) / 2;
-                    double cy = (y + resizeAnchorY) / 2;
-                    ell.setCenterX(cx);
-                    ell.setCenterY(cy);
-                    ell.setRadiusX(Math.abs(x - resizeAnchorX) / 2);
-                    ell.setRadiusY(Math.abs(y - resizeAnchorY) / 2);
+
+                    // Il centro NON cambia
+                    double centerX = (resizeAnchorX + x) / 2;
+                    double centerY = (resizeAnchorY + y) / 2;
+
+                    // Calcola i raggi dalla distanza assoluta tra il centro e il cursore
+                    double radiusX = Math.abs(x - centerX) / 2;
+                    double radiusY = Math.abs(y - centerY) / 2;
+
+                    ell.setCenterX(centerX);
+                    ell.setCenterY(centerY);
+
+                    // Imposta i raggi, almeno 1 per evitare problemi di zero o negativi
+                    ell.setRadiusX(Math.max(1, radiusX));
+                    ell.setRadiusY(Math.max(1, radiusY));
                 }
+
+
+
                 default -> {
                 }
             }
