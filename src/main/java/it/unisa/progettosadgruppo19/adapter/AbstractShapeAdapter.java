@@ -4,7 +4,7 @@ import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-
+///flkfdsa dsafdsa
 public abstract class AbstractShapeAdapter implements ShapeDataAdapter {
 
     protected final AbstractShape shape;
