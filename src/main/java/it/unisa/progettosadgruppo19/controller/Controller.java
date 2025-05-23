@@ -52,9 +52,8 @@ public class Controller {
         lineButton.setOnAction(e -> setTool("Linea"));
         rectButton.setOnAction(e -> setTool("Rettangolo"));
         ellipseButton.setOnAction(e -> setTool("Ellisse"));
-        
-        copyButton.setOnAction(evt -> onCopy());
 
+        copyButton.setOnAction(evt -> onCopy());
 
         strokePicker.setOnAction(e -> {
             Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -101,6 +100,8 @@ public class Controller {
     }
 
     private void onSave() {
+        System.out.println("[DEBUG] onSave() called");
+
         Stage stage = (Stage) saveButton.getScene().getWindow();
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Salva disegno");
@@ -109,11 +110,16 @@ public class Controller {
 
         File file = chooser.showSaveDialog(stage);
         if (file != null) {
+            System.out.println("[DEBUG] File selezionato per il salvataggio: " + file.getAbsolutePath());
             try {
                 fileManager.saveToFile(currentShapes, file);
+                System.out.println("[DEBUG] Salvataggio completato con successo.");
             } catch (IOException e) {
+                System.out.println("[ERRORE] Errore durante il salvataggio: " + e.getMessage());
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("[DEBUG] Nessun file selezionato, salvataggio annullato.");
         }
     }
 
@@ -154,7 +160,7 @@ public class Controller {
             mouseHandler.setSelectedShapeInstance(null);
         }
     }
-    
+
     private AbstractShape unwrapToAbstract(Shape shape) {
         while (shape instanceof ShapeDecorator) {
             shape = ((ShapeDecorator) shape).getWrapped();
@@ -166,8 +172,6 @@ public class Controller {
         }
     }
 
-
-    
     private void onCopy() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
         if (selected != null) {
@@ -186,18 +190,14 @@ public class Controller {
 
             // Se vuoi selezionare subito la copia:
             mouseHandler.setSelectedShapeInstance(copied);
-            
-                    // 🔍 Stampa di controllo
-                System.out.println("Figura copiata: " + copied.getClass().getSimpleName() +
-                                   " | X: " + copied.getX() +
-                                   " | Y: " + copied.getY());
-            } else {
-                System.out.println("Nessuna figura selezionata da copiare.");
-            }
-            
-            
-            
+
+            // 🔍 Stampa di controllo
+            System.out.println("Figura copiata: " + copied.getClass().getSimpleName()
+                    + " | X: " + copied.getX()
+                    + " | Y: " + copied.getY());
+        } else {
+            System.out.println("Nessuna figura selezionata da copiare.");
         }
+
     }
-
-
+}
