@@ -38,49 +38,91 @@ public class Controller {
 
     @FXML
     public void initialize() {
-        mouseHandler = new MouseEventHandler(drawingPane, currentShapes);
-        mouseHandler.setSelectedShape(selectedShape);
-        mouseHandler.setToolActive(true);
+mouseHandler = new MouseEventHandler(drawingPane, currentShapes);
+System.out.println("[DEBUG] Gestionnaire de souris initialisé");
+mouseHandler.setSelectedShape(selectedShape);
+System.out.println("[DEBUG] Forme sélectionnée définie: " + selectedShape);
+mouseHandler.setToolActive(true);
+System.out.println("[DEBUG] Outil activé");
 
-        strokePicker.setValue(javafx.scene.paint.Color.BLACK);
-        fillPicker.setValue(javafx.scene.paint.Color.TRANSPARENT);
+strokePicker.setValue(javafx.scene.paint.Color.BLACK);
+System.out.println("[DEBUG] Couleur de contour définie: Noir");
+fillPicker.setValue(javafx.scene.paint.Color.TRANSPARENT);
+System.out.println("[DEBUG] Couleur de remplissage définie: Transparent");
 
-        saveButton.setOnAction(evt -> onSave());
-        loadButton.setOnAction(evt -> onLoad());
-        deleteButton.setOnAction(evt -> onDelete());
+saveButton.setOnAction(evt -> {
+    System.out.println("[ACTION] Bouton Sauvegarder cliqué");
+    onSave();
+});
+loadButton.setOnAction(evt -> {
+    System.out.println("[ACTION] Bouton Charger cliqué"); 
+    onLoad();
+});
+deleteButton.setOnAction(evt -> {
+    System.out.println("[ACTION] Bouton Supprimer cliqué");
+    onDelete();
+});
 
-        lineButton.setOnAction(e -> setTool("Linea"));
-        rectButton.setOnAction(e -> setTool("Rettangolo"));
-        ellipseButton.setOnAction(e -> setTool("Ellisse"));
+lineButton.setOnAction(e -> {
+    setTool("Linea");
+    System.out.println("[OUTIL] Changé vers: Ligne");
+});
+rectButton.setOnAction(e -> {
+    setTool("Rettangolo");
+    System.out.println("[OUTIL] Changé vers: Rectangle"); 
+});
+ellipseButton.setOnAction(e -> {
+    setTool("Ellisse");
+    System.out.println("[OUTIL] Changé vers: Ellipse");
+});
 
-        copyButton.setOnAction(evt -> onCopy());
+copyButton.setOnAction(evt -> {
+    System.out.println("[ACTION] Bouton Copier cliqué");
+    onCopy();
+});
 
-        strokePicker.setOnAction(e -> {
-            Shape selected = mouseHandler.getSelectedShapeInstance();
-            if (selected != null) {
-                Shape decorated = new StrokeDecorator(selected, strokePicker.getValue());
-                int index = drawingPane.getChildren().indexOf(selected.getNode());
-                drawingPane.getChildren().set(index, decorated.getNode());
-                decorated.getNode().setUserData(decorated);
-                mouseHandler.setSelectedShapeInstance(decorated);
-            }
-        });
+strokePicker.setOnAction(e -> {
+    System.out.println("[EVENT] Changement de couleur de contour");
+    Shape selected = mouseHandler.getSelectedShapeInstance();
+    if (selected != null) {
+        System.out.println("[DECORATOR] Application nouveau contour sur forme ID: " + selected.hashCode());
+        Shape decorated = new StrokeDecorator(selected, strokePicker.getValue());
+        int index = drawingPane.getChildren().indexOf(selected.getNode());
+        drawingPane.getChildren().set(index, decorated.getNode());
+        decorated.getNode().setUserData(decorated);
+        mouseHandler.setSelectedShapeInstance(decorated);
+    }
+});
 
-        fillPicker.setOnAction(e -> {
-            Shape selected = mouseHandler.getSelectedShapeInstance();
-            if (selected != null) {
-                Shape decorated = new FillDecorator(selected, fillPicker.getValue());
-                int index = drawingPane.getChildren().indexOf(selected.getNode());
-                drawingPane.getChildren().set(index, decorated.getNode());
-                decorated.getNode().setUserData(decorated);
-                mouseHandler.setSelectedShapeInstance(decorated);
-            }
-        });
+fillPicker.setOnAction(e -> {
+    System.out.println("[EVENT] Changement de couleur de remplissage");
+    Shape selected = mouseHandler.getSelectedShapeInstance();
+    if (selected != null) {
+        System.out.println("[DECORATOR] Application nouveau remplissage sur forme ID: " + selected.hashCode());
+        Shape decorated = new FillDecorator(selected, fillPicker.getValue());
+        int index = drawingPane.getChildren().indexOf(selected.getNode());
+        drawingPane.getChildren().set(index, decorated.getNode());
+        decorated.getNode().setUserData(decorated);
+        mouseHandler.setSelectedShapeInstance(decorated);
+    }
+});
 
-        drawingPane.setOnMousePressed(mouseHandler::onPressed);
-        drawingPane.setOnMouseDragged(mouseHandler::onDragged);
-        drawingPane.setOnMouseReleased(mouseHandler::onReleased);
-        drawingPane.setOnMouseClicked(mouseHandler::onMouseClick);
+drawingPane.setOnMousePressed(e -> {
+    System.out.println("[SOURIS] Pressé à X:" + e.getX() + " Y:" + e.getY());
+    mouseHandler.onPressed(e);
+});
+drawingPane.setOnMouseDragged(e -> {
+    System.out.println("[SOURIS] Drag à X:" + e.getX() + " Y:" + e.getY());
+    mouseHandler.onDragged(e);
+}); 
+drawingPane.setOnMouseReleased(e -> {
+    System.out.println("[SOURIS] Relâché à X:" + e.getX() + " Y:" + e.getY());
+    mouseHandler.onReleased(e);
+});
+drawingPane.setOnMouseClicked(e -> {
+    System.out.println("[SOURIS] Clic à X:" + e.getX() + " Y:" + e.getY());
+    mouseHandler.onMouseClick(e);
+});
     }
 
     private void setTool(String tipo) {
