@@ -31,6 +31,10 @@ public class Controller {
     private Button copyButton;
     @FXML
     private Button pasteButton;
+    @FXML
+    private Button bringToFrontButton;
+    @FXML
+    private Button sendToBackButton;
 
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
@@ -82,6 +86,10 @@ public class Controller {
                 mouseHandler.setSelectedShapeInstance(decorated);
             }
         });
+        
+        bringToFrontButton.setOnAction(e -> bringToFront());
+        sendToBackButton.setOnAction(e -> sendToBack());
+
 
         drawingPane.setOnMousePressed(mouseHandler::onPressed);
         drawingPane.setOnMouseDragged(mouseHandler::onDragged);
@@ -208,6 +216,32 @@ public class Controller {
             System.out.println("Buffer vuoto: nessuna figura da incollare.");
         }
     }
+    
+    
+    // Porta la shape selezionata in primo piano (in cima allo stack visivo)
+    private void bringToFront() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            Node node = selected.getNode();
+            if (drawingPane.getChildren().remove(node)) {
+                drawingPane.getChildren().add(node); // Aggiungi in fondo => primo piano
+                System.out.println("Figura portata in primo piano.");
+            }
+        }
+    }
+
+    // Porta la shape selezionata in secondo piano (in fondo allo stack visivo)
+    private void sendToBack() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            Node node = selected.getNode();
+            if (drawingPane.getChildren().remove(node)) {
+                drawingPane.getChildren().add(0, node); // Aggiungi in testa => dietro
+                System.out.println("Figura portata in secondo piano.");
+            }
+        }
+    }
+
 
 
 
