@@ -8,12 +8,15 @@ import it.unisa.progettosadgruppo19.model.serialization.ShapeData;
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
 import it.unisa.progettosadgruppo19.model.shapes.*;
 
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.Scale;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -31,6 +34,10 @@ public class Controller {
     private Button copyButton;
     @FXML
     private Button pasteButton;
+    @FXML
+    private Button zoomInButton;
+    @FXML
+    private Button zoomOutButton;
 
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
@@ -39,10 +46,20 @@ public class Controller {
 
     private String selectedShape = "Linea";
     private Shape clipboardBuffer = null; // buffer interno
+    
+    
+    private final ZoomManager zoomManager = new ZoomManager();
+    private final Scale scaleTransform = new Scale(1, 1, 0, 0);
 
 
     @FXML
     public void initialize() {
+        
+        drawingPane.getTransforms().add(scaleTransform);
+        
+        zoomInButton.setOnAction(e -> onZoomIn());
+        zoomOutButton.setOnAction(e -> onZoomOut());
+        
         mouseHandler = new MouseEventHandler(drawingPane, currentShapes);
         mouseHandler.setSelectedShape(selectedShape);
         mouseHandler.setToolActive(true);
@@ -87,6 +104,20 @@ public class Controller {
         drawingPane.setOnMouseDragged(mouseHandler::onDragged);
         drawingPane.setOnMouseReleased(mouseHandler::onReleased);
         drawingPane.setOnMouseClicked(mouseHandler::onMouseClick);
+    }
+    
+    @FXML
+    private void onZoomIn() {
+        double s = zoomManager.zoomIn();
+        scaleTransform.setX(s);
+        scaleTransform.setY(s);
+    }
+    
+    @FXML
+    private void onZoomOut() {
+        double s = zoomManager.zoomOut();
+        scaleTransform.setX(s);
+        scaleTransform.setY(s);
     }
 
     private void setTool(String tipo) {

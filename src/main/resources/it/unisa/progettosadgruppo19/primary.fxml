@@ -10,6 +10,8 @@
             <Button fx:id="copyButton" text="Copia" />
             <Button fx:id="pasteButton" text="Incolla" onAction="#handlePaste"/>
             <Button fx:id="deleteButton" text="Delete"/>
+            <Button fx:id="zoomOutButton" text="−" onAction="#onZoomOut"/>
+            <Button fx:id="zoomInButton"  text="+" onAction="#onZoomIn"/>
             <Button fx:id="lineButton" text="Linea" />
             <Button fx:id="rectButton" text="Rettangolo" />
             <Button fx:id="ellipseButton" text="Ellisse" />
