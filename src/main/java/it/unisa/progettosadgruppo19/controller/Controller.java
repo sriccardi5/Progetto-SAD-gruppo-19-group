@@ -185,19 +185,22 @@ public class Controller {
     }
 
     @FXML
-    private void handlePaste() {
+    public void handlePaste() {
         if (clipboardBuffer != null) {
             Shape newShape = clipboardBuffer.clone(); // Clona la figura
             newShape.moveBy(10, 10); // Offset visivo
 
-            // Aggiungi la forma alla UI
+            // Imposta UserData sul nodo
+            newShape.getNode().setUserData(newShape);
+
+            // Aggiungi la figura alla UI
             drawingPane.getChildren().add(newShape.getNode());
 
             // Estrai l'AbstractShape per la logica
             AbstractShape baseShape = unwrapToAbstract(newShape);
             currentShapes.add(baseShape);
 
-            // Seleziona la nuova forma
+            // (RI)registra il riferimento anche nel MouseEventHandler, se usa una lista o mappa
             mouseHandler.setSelectedShapeInstance(newShape);
 
             System.out.println("Figura incollata: " + newShape.getClass().getSimpleName());
@@ -205,6 +208,7 @@ public class Controller {
             System.out.println("Buffer vuoto: nessuna figura da incollare.");
         }
     }
+
 
 
  }
