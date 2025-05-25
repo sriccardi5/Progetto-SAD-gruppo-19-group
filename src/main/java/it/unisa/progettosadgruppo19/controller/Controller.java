@@ -15,7 +15,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Scale;
 
 import java.io.*;
@@ -27,25 +26,11 @@ public class Controller {
     @FXML
     private Pane drawingPane;
     @FXML
-    private Button lineButton, rectButton, ellipseButton, saveButton, loadButton, deleteButton;
+    private Button lineButton, rectButton, ellipseButton, saveButton, loadButton, deleteButton, copyButton,
+            cutButton, pasteButton, zoomInButton, zoomOutButton, bringToFrontButton, sendToBackButton,
+            gridButton;
     @FXML
     private ColorPicker strokePicker, fillPicker;
-    @FXML
-    private Button copyButton;
-    @FXML
-    private Button cutButton;
-    @FXML
-    private Button pasteButton;
-    @FXML
-    private Button zoomInButton;
-    @FXML
-    private Button zoomOutButton;
-    @FXML
-    private Button bringToFrontButton;
-    @FXML
-    private Button sendToBackButton;
-
-
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
     private MouseEventHandler mouseHandler;
@@ -54,9 +39,13 @@ public class Controller {
     private String selectedShape = "Linea";
     private Shape clipboardBuffer = null; // buffer interno
     
-    
+    private boolean gridVisible = false;
+
     private final ZoomManager zoomManager = new ZoomManager();
     private final Scale scaleTransform = new Scale(1, 1, 0, 0);
+    
+    private GridManager gridManager;
+
 
 
     @FXML
@@ -84,6 +73,17 @@ public class Controller {
         
         copyButton.setOnAction(evt -> onCopy());
         cutButton.setOnAction(evt -> onCut());
+        
+      
+        
+        gridManager = new GridManager(drawingPane);
+
+        gridButton.setOnAction(e -> {
+            gridManager.toggleGrid();
+            gridButton.setStyle(gridButton.getStyle().isEmpty() ? "-fx-background-color: lightgray;" : "");
+        });
+
+
 
         strokePicker.setOnAction(e -> {
             Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -265,13 +265,14 @@ public class Controller {
         if (selected != null) {
             Node node = selected.getNode();
             if (drawingPane.getChildren().remove(node)) {
-                drawingPane.getChildren().add(0, node); // Aggiungi in testa => dietro
-                System.out.println("Figura portata in secondo piano.");
+                int gridCount = gridManager.getGridLayerCount();
+                drawingPane.getChildren().add(gridCount, node); // Inserisci dopo la griglia
+                System.out.println("Figura portata in secondo piano (sopra la griglia).");
             }
         }
     }
 
-
+    
  }
 
 
