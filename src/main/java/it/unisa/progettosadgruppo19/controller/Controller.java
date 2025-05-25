@@ -33,11 +33,18 @@ public class Controller {
     @FXML
     private Button copyButton;
     @FXML
+    private Button cutButton;
+    @FXML
     private Button pasteButton;
     @FXML
     private Button zoomInButton;
     @FXML
     private Button zoomOutButton;
+    @FXML
+    private Button bringToFrontButton;
+    @FXML
+    private Button sendToBackButton;
+
 
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
@@ -76,7 +83,7 @@ public class Controller {
         ellipseButton.setOnAction(e -> setTool("Ellisse"));
         
         copyButton.setOnAction(evt -> onCopy());
-
+        cutButton.setOnAction(evt -> onCut());
 
         strokePicker.setOnAction(e -> {
             Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -99,6 +106,10 @@ public class Controller {
                 mouseHandler.setSelectedShapeInstance(decorated);
             }
         });
+        
+        bringToFrontButton.setOnAction(e -> bringToFront());
+        sendToBackButton.setOnAction(e -> sendToBack());
+
 
         drawingPane.setOnMousePressed(mouseHandler::onPressed);
         drawingPane.setOnMouseDragged(mouseHandler::onDragged);
@@ -201,8 +212,6 @@ public class Controller {
             throw new IllegalStateException("Shape non è un AbstractShape dopo l'unwrapping");
         }
     }
-
-
     
     private void onCopy() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -214,32 +223,53 @@ public class Controller {
             System.out.println("Nessuna figura selezionata da copiare.");
         }
     }
+    
+    private void onCut() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            Shape copied = selected.clone(); // Clona la figura (inclusi decorator)
+            clipboardBuffer = copied; // Salva nel buffer
+            System.out.println("Figura tagliata nel buffer.");
+            drawingPane.getChildren().remove(selected.getNode());
+        } else {
+            System.out.println("Nessuna figura selezionata da tagliare.");
+        }
+    }
 
     @FXML
     public void handlePaste() {
         if (clipboardBuffer != null) {
-            Shape newShape = clipboardBuffer.clone(); // Clona la figura
-            newShape.moveBy(10, 10); // Offset visivo
-
-            // Imposta UserData sul nodo
-            newShape.getNode().setUserData(newShape);
-
-            // Aggiungi la figura alla UI
-            drawingPane.getChildren().add(newShape.getNode());
-
-            // Estrai l'AbstractShape per la logica
-            AbstractShape baseShape = unwrapToAbstract(newShape);
-            currentShapes.add(baseShape);
-
-            // (RI)registra il riferimento anche nel MouseEventHandler, se usa una lista o mappa
-            mouseHandler.setSelectedShapeInstance(newShape);
-
-            System.out.println("Figura incollata: " + newShape.getClass().getSimpleName());
+            mouseHandler.setShapeToPaste(clipboardBuffer.clone()); // Clona la figura
+            clipboardBuffer = null;
         } else {
             System.out.println("Buffer vuoto: nessuna figura da incollare.");
         }
     }
+    
+    
+    // Porta la shape selezionata in primo piano (in cima allo stack visivo)
+    private void bringToFront() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            Node node = selected.getNode();
+            if (drawingPane.getChildren().remove(node)) {
+                drawingPane.getChildren().add(node); // Aggiungi in fondo => primo piano
+                System.out.println("Figura portata in primo piano.");
+            }
+        }
+    }
 
+    // Porta la shape selezionata in secondo piano (in fondo allo stack visivo)
+    private void sendToBack() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            Node node = selected.getNode();
+            if (drawingPane.getChildren().remove(node)) {
+                drawingPane.getChildren().add(0, node); // Aggiungi in testa => dietro
+                System.out.println("Figura portata in secondo piano.");
+            }
+        }
+    }
 
 
  }

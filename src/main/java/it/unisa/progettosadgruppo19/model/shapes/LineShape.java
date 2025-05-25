@@ -61,7 +61,27 @@ public class LineShape extends AbstractShape{
     public double getY() {
         return Math.min(line.getStartY(), line.getEndY());
     }
+    @Override
+    public void setX(double x) {
+        // Calculate current left position (min X)
+        double currentX = getX();
+        // Calculate horizontal shift needed
+        double deltaX = x - currentX;
+        // Apply shift to both start and end points
+        line.setStartX(line.getStartX() + deltaX);
+        line.setEndX(line.getEndX() + deltaX);
+    }
 
+    @Override
+    public void setY(double y) {
+        // Calculate current top position (min Y)
+        double currentY = getY();
+        // Calculate vertical shift needed
+        double deltaY = y - currentY;
+        // Apply shift to both start and end points
+        line.setStartY(line.getStartY() + deltaY);
+        line.setEndY(line.getEndY() + deltaY);
+    }
     @Override
     public double getWidth() {
         return Math.abs(line.getEndX() - line.getStartX());

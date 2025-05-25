@@ -75,6 +75,16 @@ public class EllipseShape extends AbstractShape implements Shape {
     }
 
     @Override
+    public void setX(double x) {
+        e.setCenterX(x + e.getRadiusX());
+    }
+
+    @Override
+    public void setY(double y) {
+        e.setCenterY(y + e.getRadiusY());
+    }    
+
+    @Override
     public double getWidth() {
         return e.getRadiusX() * 2;
     }
@@ -104,5 +114,6 @@ public class EllipseShape extends AbstractShape implements Shape {
 
         return new EllipseShape(this.startX, this.startY, newEllipse, (Color) ell.getStroke());
     }
+
 
 }

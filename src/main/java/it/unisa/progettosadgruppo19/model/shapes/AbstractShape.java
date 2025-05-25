@@ -1,5 +1,6 @@
 package it.unisa.progettosadgruppo19.model.shapes;
 
+import it.unisa.progettosadgruppo19.decorator.ShapeDecorator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,6 +62,21 @@ public abstract class AbstractShape implements Shape {
     public abstract double getY();
 
     /**
+     * Restituisce la coordinata X dell'estremo sinistro della shape.
+     *
+     * @param  x imposta valore x minimo
+     */
+    public abstract void setX(double x);
+
+    /**
+     * Restituisce la coordinata Y dell'estremo superiore della shape.
+     *
+     * @param  y imposta valore y minimo
+     */
+    public abstract void setY(double y);
+
+    
+    /**
      * Restituisce la larghezza complessiva della shape.
      *
      * @return differenza orizzontale tra i bordi
@@ -81,9 +97,21 @@ public abstract class AbstractShape implements Shape {
 
     
     public void moveBy(double dx, double dy) {
-    javafx.scene.shape.Shape node = (javafx.scene.shape.Shape) getNode();
-    node.setTranslateX(node.getTranslateX() + dx);
-    node.setTranslateY(node.getTranslateY() + dy);
-}
+        javafx.scene.shape.Shape node = (javafx.scene.shape.Shape) getNode();
+        node.setTranslateX(node.getTranslateX() + dx);
+        node.setTranslateY(node.getTranslateY() + dy);
+        //node.setX(node.getTranslateX() + dx);
+        //node.setY(node.getTranslateY() + dy);
+    }
 
+    public static AbstractShape unwrapToAbstract(Shape shape) {
+        while (shape instanceof ShapeDecorator) {
+            shape = ((ShapeDecorator) shape).getWrapped();
+        }
+        if (shape instanceof AbstractShape) {
+            return (AbstractShape) shape;
+        } else {
+            throw new IllegalStateException("Shape non è un AbstractShape dopo l'unwrapping");
+        }
+    }
 }

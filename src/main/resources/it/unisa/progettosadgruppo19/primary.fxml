@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="it.unisa.progettosadgruppo19.controller.Controller">
+
     <top>
-        <ToolBar>
+
+        <!-- <ToolBar>
             <Button fx:id="saveButton" text="Save" />
             <Button fx:id="loadButton" text="Load" />
             <Button fx:id="copyButton" text="Copia" />
@@ -19,9 +22,73 @@
             <ColorPicker fx:id="strokePicker"/>     
             <Label text="Riempimento:" />
             <ColorPicker fx:id="fillPicker" />   
-        </ToolBar>
+        </ToolBar> -->
+
+
+        <VBox spacing="0">
+
+            <!-- Barra comandi base -->
+            <ToolBar>
+                <Button fx:id="zoomOutButton" text="−" onAction="#onZoomOut"/>
+                <Button fx:id="zoomInButton"  text="+" onAction="#onZoomIn"/>
+                <Button fx:id="saveButton" text="💾 Salva" />
+                <Button fx:id="loadButton" text="📂 Carica" />
+                <Separator orientation="VERTICAL" />
+                <Button fx:id="bringToFrontButton" text="⬆ In Primo Piano" />
+                <Button fx:id="sendToBackButton" text="⬇ In Secondo Piano" />
+            </ToolBar>
+
+            <!-- Barra strumenti in stile Paint -->
+            <ToolBar style="-fx-background-color: white;" prefHeight="80">
+
+                <!-- Sezione Appunti -->
+                <VBox alignment="CENTER">
+                    <HBox spacing="5">
+                        <Button fx:id="copyButton" text="📋 Copia" />
+                        <Button fx:id="cutButton" text="✂ Taglia" />
+                        <Button fx:id="pasteButton" text="📥 Incolla" onAction="#handlePaste"/>
+                        <Button fx:id="deleteButton" text="🗑 Elimina" />
+                    </HBox>
+                    <Label text="Appunti" style="-fx-font-size: 10;" />
+                </VBox>
+
+                <Separator orientation="VERTICAL" />
+
+                <!-- Sezione Forme -->
+                <VBox alignment="CENTER">
+                    <HBox spacing="5">
+                        <Button fx:id="lineButton" text="➖" />
+                        <Button fx:id="rectButton" text="◻" />
+                        <Button fx:id="ellipseButton" text="◯" />
+                    </HBox>
+                    <Label text="Forme" style="-fx-font-size: 10;" />
+                </VBox>
+
+                <Separator orientation="VERTICAL" />
+
+                <!-- Sezione Colori -->
+                <VBox alignment="CENTER">
+                    <HBox spacing="5">
+                        <Label text="Bordo:" />
+                        <ColorPicker fx:id="strokePicker" />
+                        <Label text="Riemp.: " />
+                        <ColorPicker fx:id="fillPicker" />
+                    </HBox>
+                    <Label text="Colori" style="-fx-font-size: 10;" />
+                </VBox>
+
+            </ToolBar>
+            
+            <!-- Linea divisoria orizzontale -->
+            <Separator orientation="HORIZONTAL" />
+
+        </VBox>
+
+
     </top>
+
     <center>
         <Pane fx:id="drawingPane" style="-fx-background-color: white;" />
     </center>
+
 </BorderPane>
