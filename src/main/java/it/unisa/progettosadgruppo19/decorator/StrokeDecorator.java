@@ -24,11 +24,6 @@ public class StrokeDecorator extends ShapeDecorator implements Serializable {
         ((javafx.scene.shape.Shape) decorated.getNode()).setStroke(stroke);
     }
 
-    
-
-  
-    
-
     @Override
     protected Shape recreateWith(Shape newInner) {
         return new StrokeDecorator(newInner, stroke);

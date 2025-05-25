@@ -29,6 +29,8 @@ public class Controller {
     private ColorPicker strokePicker, fillPicker;
     @FXML
     private Button copyButton;
+     @FXML
+    private Button cutButton;
     @FXML
     private Button pasteButton;
 
@@ -59,7 +61,7 @@ public class Controller {
         ellipseButton.setOnAction(e -> setTool("Ellisse"));
         
         copyButton.setOnAction(evt -> onCopy());
-
+        cutButton.setOnAction(evt -> onCut());
 
         strokePicker.setOnAction(e -> {
             Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -170,8 +172,6 @@ public class Controller {
             throw new IllegalStateException("Shape non è un AbstractShape dopo l'unwrapping");
         }
     }
-
-
     
     private void onCopy() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
@@ -183,33 +183,28 @@ public class Controller {
             System.out.println("Nessuna figura selezionata da copiare.");
         }
     }
+    
+    private void onCut() {
+        Shape selected = mouseHandler.getSelectedShapeInstance();
+        if (selected != null) {
+            Shape copied = selected.clone(); // Clona la figura (inclusi decorator)
+            clipboardBuffer = copied; // Salva nel buffer
+            System.out.println("Figura tagliata nel buffer.");
+            drawingPane.getChildren().remove(selected.getNode());
+        } else {
+            System.out.println("Nessuna figura selezionata da tagliare.");
+        }
+    }
 
     @FXML
     public void handlePaste() {
         if (clipboardBuffer != null) {
-            Shape newShape = clipboardBuffer.clone(); // Clona la figura
-            newShape.moveBy(10, 10); // Offset visivo
-
-            // Imposta UserData sul nodo
-            newShape.getNode().setUserData(newShape);
-
-            // Aggiungi la figura alla UI
-            drawingPane.getChildren().add(newShape.getNode());
-
-            // Estrai l'AbstractShape per la logica
-            AbstractShape baseShape = unwrapToAbstract(newShape);
-            currentShapes.add(baseShape);
-
-            // (RI)registra il riferimento anche nel MouseEventHandler, se usa una lista o mappa
-            mouseHandler.setSelectedShapeInstance(newShape);
-
-            System.out.println("Figura incollata: " + newShape.getClass().getSimpleName());
+            mouseHandler.setShapeToPaste(clipboardBuffer.clone()); // Clona la figura
+            clipboardBuffer = null;
         } else {
             System.out.println("Buffer vuoto: nessuna figura da incollare.");
         }
     }
-
-
 
  }
 
