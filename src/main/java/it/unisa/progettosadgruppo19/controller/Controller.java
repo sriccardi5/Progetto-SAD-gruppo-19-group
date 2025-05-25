@@ -29,12 +29,17 @@ public class Controller {
     private ColorPicker strokePicker, fillPicker;
     @FXML
     private Button copyButton;
+    @FXML
+    private Button pasteButton;
+
 
     private final List<AbstractShape> currentShapes = new ArrayList<>();
     private MouseEventHandler mouseHandler;
     private ShapeFileManager fileManager = new ShapeFileManager();
 
     private String selectedShape = "Linea";
+    private Shape clipboardBuffer = null; // buffer interno
+
 
     @FXML
     public void initialize() {
@@ -171,33 +176,37 @@ public class Controller {
     private void onCopy() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
         if (selected != null) {
-            // Clona la shape, incluso eventuali decorator
-            Shape copied = selected.clone();
-
-            // Sposta leggermente la copia per distinguere visivamente
-            copied.moveBy(10, 10);
-
-            // Aggiunge la nuova forma alla UI
-            drawingPane.getChildren().add(copied.getNode());
-
-            // Estrai l'AbstractShape base (senza decorator) per la logica
-            AbstractShape baseShape = unwrapToAbstract(copied);
-            currentShapes.add(baseShape);
-
-            // Se vuoi selezionare subito la copia:
-            mouseHandler.setSelectedShapeInstance(copied);
-            
-                    // 🔍 Stampa di controllo
-                System.out.println("Figura copiata: " + copied.getClass().getSimpleName() +
-                                   " | X: " + copied.getX() +
-                                   " | Y: " + copied.getY());
-            } else {
-                System.out.println("Nessuna figura selezionata da copiare.");
-            }
-            
-            
-            
+            Shape copied = selected.clone(); // Clona la figura (inclusi decorator)
+            clipboardBuffer = copied; // Salva nel buffer
+            System.out.println("Figura copiata nel buffer.");
+        } else {
+            System.out.println("Nessuna figura selezionata da copiare.");
         }
     }
+
+    @FXML
+    private void handlePaste() {
+        if (clipboardBuffer != null) {
+            Shape newShape = clipboardBuffer.clone(); // Clona la figura
+            newShape.moveBy(10, 10); // Offset visivo
+
+            // Aggiungi la forma alla UI
+            drawingPane.getChildren().add(newShape.getNode());
+
+            // Estrai l'AbstractShape per la logica
+            AbstractShape baseShape = unwrapToAbstract(newShape);
+            currentShapes.add(baseShape);
+
+            // Seleziona la nuova forma
+            mouseHandler.setSelectedShapeInstance(newShape);
+
+            System.out.println("Figura incollata: " + newShape.getClass().getSimpleName());
+        } else {
+            System.out.println("Buffer vuoto: nessuna figura da incollare.");
+        }
+    }
+
+
+ }
 
 

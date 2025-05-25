@@ -2,13 +2,12 @@ package it.unisa.progettosadgruppo19.decorator;
 
 import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
 import it.unisa.progettosadgruppo19.model.shapes.Shape;
-import java.io.Serializable;
 import javafx.scene.Node;
 
 /**
  * Decorator astratto che inoltra tutte le chiamate all'istanza decorata.
  */
-public abstract class ShapeDecorator implements Shape, Serializable {
+public abstract class ShapeDecorator implements Shape{
 
     protected final Shape decorated;
 
@@ -67,9 +66,23 @@ public abstract class ShapeDecorator implements Shape, Serializable {
 
     @Override
     public Shape clone() {
-        Shape baseClone = unwrapToAbstract(decorated).clone(); // clone della forma base
-        return recreateWith(baseClone);
+        return recreateWith(decorated.clone()); // ricrea la struttura clonando in profondità
     }
+
+
+    private Shape recreateChainWith(AbstractShape baseClone) {
+        if (decorated instanceof ShapeDecorator) {
+            ShapeDecorator innerDecorator = (ShapeDecorator) decorated;
+            // Ricorsione: ricrea decorator più interni attorno alla forma base clonata
+            Shape innerClone = innerDecorator.recreateChainWith(baseClone);
+            // Ricrea questo decorator attorno al clone interno
+            return recreateWith(innerClone);
+        } else {
+            // Decorator base è la forma concreta (già clonata)
+            return baseClone;
+        }
+    }
+
 
     
     protected abstract Shape recreateWith(Shape newInner);
