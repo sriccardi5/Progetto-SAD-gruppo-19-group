@@ -10,6 +10,15 @@ public class EllipseShape extends AbstractShape implements Shape {
 
     private final double startX, startY;
     private final Ellipse e;
+    
+    private EllipseShape(double startX, double startY, Ellipse ellipse, Color stroke) {
+        super(ellipse);
+        this.startX = startX;
+        this.startY = startY;
+        this.e = (Ellipse) node;
+        e.setStroke(stroke);
+    }
+
 
     /**
      * Costruisce un'EllipseShape iniziale di raggio zero.
@@ -78,16 +87,22 @@ public class EllipseShape extends AbstractShape implements Shape {
     @Override
     public AbstractShape clone() {
         Ellipse ell = (Ellipse) this.node;
-        EllipseShape clone = new EllipseShape(
+
+        Ellipse newEllipse = new Ellipse(
             ell.getCenterX(),
             ell.getCenterY(),
             ell.getRadiusX(),
-            ell.getRadiusY(),
-            (Color) ell.getStroke()
+            ell.getRadiusY()
         );
-        clone.e.setFill(ell.getFill());
-        clone.e.setTranslateX(ell.getTranslateX());
-        clone.e.setTranslateY(ell.getTranslateY());
-        return clone;
+
+        newEllipse.setStroke((Color) ell.getStroke());
+        newEllipse.setFill(ell.getFill());
+        newEllipse.setTranslateX(ell.getTranslateX());
+        newEllipse.setTranslateY(ell.getTranslateY());
+        newEllipse.setStrokeWidth(ell.getStrokeWidth());
+        newEllipse.getStrokeDashArray().setAll(ell.getStrokeDashArray());
+
+        return new EllipseShape(this.startX, this.startY, newEllipse, (Color) ell.getStroke());
     }
+
 }

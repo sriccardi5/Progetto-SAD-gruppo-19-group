@@ -48,5 +48,4 @@ public class ShapeManager {
                 .findFirst()
                 .orElse(null);
     }
- 
 }
