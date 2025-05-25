@@ -51,6 +51,16 @@ public abstract class ShapeDecorator implements Shape{
     }
 
     @Override
+    public void setX(double x) {
+        decorated.setX(x);
+    }
+
+    @Override
+    public void setY(double y) {
+        decorated.setY(y);
+    }
+
+    @Override
     public double getWidth() {
         return decorated.getWidth();
     }
@@ -93,10 +103,5 @@ public abstract class ShapeDecorator implements Shape{
         }
         return (AbstractShape) shape;
     }
-    
-    @Override
-    public void moveBy(double dx, double dy) {
-        decorated.moveBy(dx, dy);
-    }
-
+   
 }

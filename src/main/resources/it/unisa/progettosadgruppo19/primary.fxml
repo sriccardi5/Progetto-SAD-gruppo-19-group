@@ -6,6 +6,7 @@
             fx:controller="it.unisa.progettosadgruppo19.controller.Controller">
 
     <top>
+
         <VBox spacing="0">
 
             <!-- Barra comandi base -->
@@ -24,7 +25,8 @@
                 <VBox alignment="CENTER">
                     <HBox spacing="5">
                         <Button fx:id="copyButton" text="📋 Copia" />
-                        <Button fx:id="pasteButton" text="📥 Incolla" />
+                        <Button fx:id="cutButton" text="✂ Taglia" />
+                        <Button fx:id="pasteButton" text="📥 Incolla" onAction="#handlePaste"/>
                         <Button fx:id="deleteButton" text="🗑 Elimina" />
                     </HBox>
                     <Label text="Appunti" style="-fx-font-size: 10;" />
@@ -36,7 +38,7 @@
                 <VBox alignment="CENTER">
                     <HBox spacing="5">
                         <Button fx:id="lineButton" text="➖" />
-                        <Button fx:id="rectButton" text="▭" />
+                        <Button fx:id="rectButton" text="◻" />
                         <Button fx:id="ellipseButton" text="◯" />
                     </HBox>
                     <Label text="Forme" style="-fx-font-size: 10;" />
@@ -61,6 +63,7 @@
             <Separator orientation="HORIZONTAL" />
 
         </VBox>
+
     </top>
 
     <center>

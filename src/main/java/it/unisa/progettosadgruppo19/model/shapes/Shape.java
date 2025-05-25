@@ -39,10 +39,11 @@ public interface Shape {
     
     double getX();
     double getY();
+    void   setX(double x);
+    void   setY(double x);
     double getWidth();
     double getHeight();
 
     Shape clone();
     
-    void moveBy(double dx, double dy);
 }

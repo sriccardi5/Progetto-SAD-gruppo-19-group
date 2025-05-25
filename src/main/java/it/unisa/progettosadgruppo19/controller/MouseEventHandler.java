@@ -40,6 +40,8 @@ public class MouseEventHandler {
     private static final double HANDLE_RADIUS = 6.0;
     private static final double ELLIPSE_BORDER_TOLERANCE = 6.0;
 
+    private Shape   shapeToPaste;
+    
     public enum ResizeMode {
         NONE,
         LINE_START, LINE_END,
@@ -51,6 +53,7 @@ public class MouseEventHandler {
     public MouseEventHandler(Pane drawingPane, List<AbstractShape> currentShapes) {
         this.drawingPane = drawingPane;
         this.currentShapes = currentShapes;
+        this.shapeToPaste = null;
     }
 
     public void setSelectedShape(String selectedShape) {
@@ -355,6 +358,13 @@ public class MouseEventHandler {
     }
 
     public void onMouseClick(MouseEvent e) {
+       // gestione logica incolla
+        if (shapeToPaste!=null){ 
+            handlePaste(e.getX(),e.getY());
+            shapeToPaste = null;
+            return;
+        }
+        
         for (Node node : drawingPane.getChildren()) {
             if (node instanceof javafx.scene.shape.Shape fxShape) {
                 fxShape.setStrokeWidth(1);
@@ -363,12 +373,11 @@ public class MouseEventHandler {
         }
 
         selectedShapeInstance = null;
-
         for (Node node : drawingPane.getChildren()) {
             if (!(node instanceof javafx.scene.shape.Shape fxShape)) {
                 continue;
             }
-
+            
             boolean isHit;
 
             if (fxShape instanceof Line line) {
@@ -378,7 +387,7 @@ public class MouseEventHandler {
             } else {
                 isHit = fxShape.contains(e.getX(), e.getY());
             }
-
+            
             if (!isHit) {
                 continue;
             }
@@ -397,5 +406,30 @@ public class MouseEventHandler {
         if (selectedShapeInstance == null) {
             toolActive = false;
         }
+    }
+    
+    public void setShapeToPaste(Shape shapeToPaste){
+        this.shapeToPaste = shapeToPaste;
+    }
+    
+    
+    private void handlePaste(double x,double y){
+        shapeToPaste.setX(x);
+        shapeToPaste.setY(y);        
+        
+        // Imposta UserData sul nodo
+        shapeToPaste.getNode().setUserData(shapeToPaste);
+
+        // Aggiungi la figura alla UI
+        drawingPane.getChildren().add(shapeToPaste.getNode());
+
+        // Estrai l'AbstractShape per la logica
+        AbstractShape baseShape = AbstractShape.unwrapToAbstract(shapeToPaste);
+        currentShapes.add(baseShape);
+
+        // (RI)registra il riferimento anche nel MouseEventHandler, se usa una lista o mappa
+        setSelectedShapeInstance(shapeToPaste);
+        
+        System.out.println("Figura incollata: " + shapeToPaste.getClass().getSimpleName());
     }
 }

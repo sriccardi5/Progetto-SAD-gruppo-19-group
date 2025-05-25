@@ -57,7 +57,16 @@ public class RectangleShape extends AbstractShape {
     public double getY() {
         return r.getY();
     }
+    
+    @Override
+    public void   setX(double x){
+        r.setX(x);
+    }
 
+    @Override
+    public void   setY(double y){
+        r.setY(y);
+    }
     @Override
     public double getWidth() {
         return r.getWidth();
