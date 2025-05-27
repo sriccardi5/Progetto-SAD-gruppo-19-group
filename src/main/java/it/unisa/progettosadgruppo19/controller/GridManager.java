@@ -19,6 +19,13 @@ public class GridManager {
     private final List<Line> gridLines = new ArrayList<>();
     private final Pane drawingPane;
     private boolean gridVisible = false;
+    
+    private double spacing = 20;
+    
+    /** Permette di cambiare la spaziatura della griglia */
+    public void setSpacing(double spacing) {
+        this.spacing = spacing;
+    }
 
     public GridManager(Pane drawingPane) {
         this.drawingPane = drawingPane;
@@ -35,7 +42,7 @@ public class GridManager {
     }
 
     private void drawGrid() {
-        final double spacing = 20;
+        //final double spacing = 20;
         final double width = drawingPane.getWidth();
         final double height = drawingPane.getHeight();
 

@@ -11,6 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.transform.Scale;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert;
+import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,14 +106,38 @@ public class Controller {
         });
 
         gridButton.setOnAction(e -> {
-            gridManager.toggleGrid();
-            gridButton.setStyle(gridButton.getStyle().isEmpty() ? "-fx-background-color: lightgray;" : "");
+            // se la griglia non è già presente, chiedi la dimensione
+            if (gridManager.getGridLayerCount() == 0) {
+                TextInputDialog dialog = new TextInputDialog("20");
+                dialog.setTitle("Imposta dimensione griglia");
+                dialog.setHeaderText("Dimensione dei quadrati della griglia");
+                dialog.setContentText("Inserisci la dimensione del lato (px):");
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(input -> {
+                    try {
+                        double size = Double.parseDouble(input);
+                        gridManager.setSpacing(size);
+                        gridManager.toggleGrid();
+                        gridButton.setStyle("-fx-background-color: lightgray;");
+                    } catch (NumberFormatException ex) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Input non valido");
+                        alert.setHeaderText("Valore non valido");
+                        alert.setContentText("Per favore, inserisci un numero valido.");
+                        alert.showAndWait();
+                    }
+                });
+            }
+            // se la griglia è già visibile, la rimuoviamo direttamente
+            else {
+                gridManager.toggleGrid();
+                gridButton.setStyle("");
+            }
         });
-
-        zoomInButton.setOnAction(e -> {
-            double s = zoomManager.zoomIn();
-            scaleTransform.setX(s);
-            scaleTransform.setY(s);
+            zoomInButton.setOnAction(e -> {
+                double s = zoomManager.zoomIn();
+                scaleTransform.setX(s);
+                scaleTransform.setY(s);
         });
 
         zoomOutButton.setOnAction(e -> {
