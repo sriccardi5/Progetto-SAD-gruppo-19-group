@@ -1,0 +1,49 @@
+package it.unisa.progettosadgruppo19.command;
+
+import it.unisa.progettosadgruppo19.command.receiver.ShapeManagerReceiver;
+import it.unisa.progettosadgruppo19.command.receiver.ClipboardReceiver;
+import it.unisa.progettosadgruppo19.controller.MouseEventHandler;
+import it.unisa.progettosadgruppo19.controller.ShapeManager;
+import it.unisa.progettosadgruppo19.model.shapes.AbstractShape;
+import it.unisa.progettosadgruppo19.model.shapes.Shape;
+
+public class Paste implements UndoableCommand {
+
+    private final ClipboardReceiver clipboard;
+    private final ShapeManagerReceiver shapeManager;
+    private Shape pastedShape;
+    private final double x, y;
+
+    public Paste(ClipboardReceiver clipboard, ShapeManagerReceiver shapeManager, double x, double y) {
+        this.clipboard = clipboard;
+        this.shapeManager = shapeManager;
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public void execute() {
+        Shape shape = clipboard.getClipboard();
+        if (shape != null) {
+            System.out.println("[PASTE] Incollando figura: " + shape.getClass().getSimpleName() + " @ " + x + ", " + y);
+            shape.setX(x);
+            shape.setY(y);
+            pastedShape = shape.clone();
+            shapeManager.addShape(pastedShape);
+            pastedShape.getNode().setUserData(pastedShape);
+            System.out.println("[PASTE] Nodo incollato: " + pastedShape.getClass().getSimpleName()
+                    + " @ (" + pastedShape.getX() + ", " + pastedShape.getY() + ") - UserData: "
+                    + pastedShape.getNode().getUserData());
+
+        } else {
+            System.out.println("[PASTE] Buffer vuoto.");
+        }
+    }
+
+    @Override
+    public void undo() {
+        if (pastedShape != null) {
+            shapeManager.removeShape(pastedShape);
+        }
+    }
+}
