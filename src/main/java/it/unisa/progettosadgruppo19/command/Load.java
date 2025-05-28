@@ -12,6 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Comando per caricare un disegno da file binario (*.bin).
+ * Mostra un {@link FileChooser}, utilizza {@link ShapeFileManager} per
+ * leggere i dati e ricostruire le {@link AbstractShape}, poi le visualizza
+ * su un {@link Pane}.
+ */
 public class Load implements Command {
 
     private final Stage stage;
@@ -19,6 +25,14 @@ public class Load implements Command {
     private final Pane drawingPane;
     private final ShapeFileManager fileManager;
 
+    /**
+     * Costruisce un comando Load.
+     *
+     * @param stage finestra JavaFX per il FileChooser; non può essere {@code null}
+     * @param currentShapes lista di shape correnti da sostituire; non può essere {@code null}
+     * @param drawingPane pane in cui inserire i nodi delle shape; non può essere {@code null}
+     * @param fileManager gestore per il caricamento e ricostruzione delle shape; non può essere {@code null}
+     */
     public Load(Stage stage, List<AbstractShape> currentShapes, Pane drawingPane, ShapeFileManager fileManager) {
         this.stage = stage;
         this.currentShapes = currentShapes;
@@ -26,6 +40,11 @@ public class Load implements Command {
         this.fileManager = fileManager;
     }
 
+     /**
+     * Esegue il comando aprendo il FileChooser, caricando il file selezionato,
+     * pulendo la lista e il pane, ricostruendo le shape e aggiungendole
+     * nuovamente all'interfaccia. Stampa in console i dettagli delle shape.
+     */
     @Override
     public void execute() {
         FileChooser chooser = new FileChooser();

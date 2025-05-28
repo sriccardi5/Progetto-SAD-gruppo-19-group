@@ -18,6 +18,11 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller principale per l'interfaccia di disegno.
+ * Gestisce la toolbar, il canvas, i comandi di file (salva/carica),
+ * undo/redo e l'applicazione di stroke, fill e zoom.
+ */
 public class Controller {
 
     @FXML
@@ -40,6 +45,10 @@ public class Controller {
 
     private String selectedShape = "Linea";
 
+    /**
+     * Inizializza il controller: collega i trasform, i listener dei bottoni,
+     * configura il mouse handler e imposta colori di default.
+     */
     @FXML
     public void initialize() {
         drawingPane.getTransforms().add(scaleTransform);
@@ -152,6 +161,11 @@ public class Controller {
         drawingPane.setOnMouseClicked(mouseHandler::onMouseClick);
     }
 
+    /**
+     * Seleziona il tipo di shape da creare.
+     *
+     * @param tipo nome del tipo di shape ("Linea", "Rettangolo", "Ellisse", ecc.)
+     */
     private void setTool(String tipo) {
         selectedShape = tipo;
         mouseHandler.setSelectedShape(tipo);
@@ -161,16 +175,19 @@ public class Controller {
         mouseHandler.unselectShape();
     }
 
+    /** Esegue il comando di salvataggio su file. */
     private void onSave() {
         Stage stage = (Stage) saveButton.getScene().getWindow();
         new Save(stage, currentShapes, fileManager).execute();
     }
 
+    /** Esegue il comando di caricamento da file. */
     private void onLoad() {
         Stage stage = (Stage) loadButton.getScene().getWindow();
         new Load(stage, currentShapes, drawingPane, fileManager).execute();
     }
 
+    /** Applica il colore di contorno (stroke) alla shape selezionata. */
     private void applyStroke() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
         if (selected != null) {
@@ -182,6 +199,7 @@ public class Controller {
         }
     }
 
+    /** Applica il colore di riempimento (fill) alla shape selezionata. */
     private void applyFill() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
         if (selected != null) {
@@ -193,6 +211,7 @@ public class Controller {
         }
     }
 
+    
     @FXML
     public void handlePaste() {
         drawingPane.setOnMouseClicked(event -> {
@@ -201,6 +220,7 @@ public class Controller {
         });
     }
 
+    /** Zoom avanti applicando il fattore successivo. */
     @FXML
     private void onZoomIn() {
         double s = zoomManager.zoomIn();
@@ -208,6 +228,7 @@ public class Controller {
         scaleTransform.setY(s);
     }
 
+    /** Zoom avanti applicando il fattore precedente. */
     @FXML
     private void onZoomOut() {
         double s = zoomManager.zoomOut();
@@ -215,11 +236,13 @@ public class Controller {
         scaleTransform.setY(s);
     }
 
+    /** Annulla l'ultimo comando eseguito (undo). */
     @FXML
     private void onUndo() {
         commandInvoker.undo();
     }
 
+    /** Attiva la modalità click-per-incollare. */
     private void enablePasteMode() {
         System.out.println("[PASTE MODE] Attivato: clicca sul canvas per incollare");
         drawingPane.setOnMouseClicked(event -> {

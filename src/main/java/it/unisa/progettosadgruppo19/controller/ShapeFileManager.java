@@ -19,6 +19,13 @@ import java.util.stream.Collectors;
  */
 public class ShapeFileManager {
 
+    /**
+     * Serializza la lista di shape e la salva sul file specificato.
+     *
+     * @param shapes lista di {@link AbstractShape} da salvare.
+     * @param file   file di destinazione; creato se inesistente.
+     * @throws IOException in caso di errori di I/O.
+     */
     public void saveToFile(List<AbstractShape> shapes, File file) throws IOException {
         List<ShapeData> dataList = shapes.stream()
                 .map(shape -> new ShapeAdapter(shape).getShapeData())
@@ -31,6 +38,14 @@ public class ShapeFileManager {
         }
     }
 
+    /**
+     * Carica da file un {@link DrawingData} serializzato.
+     *
+     * @param file file sorgente contenente l'oggetto {@code DrawingData}.
+     * @return l'istanza di {@link DrawingData} letta dal file.
+     * @throws IOException            in caso di errori di I/O.
+     * @throws ClassNotFoundException se la classe serializzata non è trovata.
+     */
     public DrawingData loadFromFile(File file) throws IOException, ClassNotFoundException {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
             Object obj = in.readObject();
@@ -42,6 +57,12 @@ public class ShapeFileManager {
         }
     }
 
+    /**
+     * Ricostruisce le {@link AbstractShape} da un {@link DrawingData}.
+     *
+     * @param drawingData dati serializzati del disegno.
+     * @return lista di {@link AbstractShape} ricreate nel loro stato originale.
+     */
     public List<AbstractShape> rebuildShapes(DrawingData drawingData) {
         List<AbstractShape> shapes = new ArrayList<>();
 

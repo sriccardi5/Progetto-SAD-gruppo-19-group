@@ -19,6 +19,11 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
+/**
+ * Gestisce gli eventi mouse sul canvas per creare, selezionare,
+ * spostare, ridimensionare, decorare e incollare le Shape.
+ * Implementa ClipboardReceiver per supportare copy/paste.
+ */
 public class MouseEventHandler implements ClipboardReceiver {
 
     private final Pane drawingPane;
@@ -53,33 +58,69 @@ public class MouseEventHandler implements ClipboardReceiver {
         ELLIPSE_BORDER
     }
 
+    /**
+     * Costruisce un handler per il Pane e la lista di shape correnti.
+     *
+     * @param drawingPane   il Pane su cui disegnare; non può essere {@code null}.
+     * @param currentShapes la lista di shape create; non può essere {@code null}.
+     */
     public MouseEventHandler(Pane drawingPane, List<AbstractShape> currentShapes) {
         this.drawingPane = drawingPane;
         this.currentShapes = currentShapes;
         this.shapeToPaste = null;
     }
 
+     /**
+     * Seleziona il tipo di shape da disegnare (es. "Linea", "Rettangolo", ...).
+     *
+     * @param tipo nome del tipo di shape.
+     */
     public void setSelectedShape(String selectedShape) {
         this.selectedShape = selectedShape;
     }
 
+     /**
+     * Imposta il colore del bordo delle nuove shape.
+     *
+     * @param strokeColor il colore di contorno.
+     */
     public void setStrokeColor(Color strokeColor) {
         this.strokeColor = strokeColor;
     }
 
+      /**
+     * Imposta il colore di riempimento delle nuove shape.
+     *
+     * @param fillColor il colore di riempimento.
+     */
     public void setFillColor(Color fillColor) {
         this.fillColor = fillColor;
     }
 
+    /**
+     * Restituisce l'istanza di shape selezionata.
+     *
+     * @return shape selezionata, o {@code null}.
+     */
     public void setSelectedShapeInstance(Shape shape) {
         this.selectedShapeInstance = shape;
     }
 
+    /**
+     * Salva una shape nel buffer per il paste.
+     *
+     * @param shape la shape da copiare; {@code null} per svuotare.
+     */
     @Override
     public void setClipboard(Shape shape) {
         this.clipboardBuffer = shape;
     }
 
+    /**
+     * Restituisce la shape attualmente nel buffer.
+     *
+     * @return la shape copiata, o {@code null} se vuoto.
+     */
     @Override
     public Shape getClipboard() {
         return clipboardBuffer;
@@ -89,6 +130,11 @@ public class MouseEventHandler implements ClipboardReceiver {
         return selectedShapeInstance;
     }
 
+    /**
+     * Attiva o disattiva l'elaborazione degli eventi per creare/modificare shape.
+     *
+     * @param active {@code true} per abilitare, {@code false} per ignorare.
+     */
     public void setToolActive(boolean active) {
         this.toolActive = active;
     }
@@ -110,6 +156,11 @@ public class MouseEventHandler implements ClipboardReceiver {
         return Math.hypot(px - projX, py - projY) <= tolerance;
     }
 
+    /**
+     * Evento mouse pressed: inizia creazione, selezione o avvio di drag/resize.
+     *
+     * @param e evento di pressione del mouse.
+     */
     public void onPressed(MouseEvent e) {
         double x = e.getX(), y = e.getY();
 
@@ -250,6 +301,11 @@ public class MouseEventHandler implements ClipboardReceiver {
         drawingPane.getChildren().add(tempShape.getNode());
     }
 
+    /**
+     * Evento mouse dragged: aggiorna posizione o dimensioni durante il drag/resize.
+     *
+     * @param e evento di trascinamento del mouse.
+     */
     public void onDragged(MouseEvent e) {
         double x = Math.min(Math.max(0, e.getX()), drawingPane.getWidth());
         double y = Math.min(Math.max(0, e.getY()), drawingPane.getHeight());
@@ -350,6 +406,11 @@ public class MouseEventHandler implements ClipboardReceiver {
         }
     }
 
+    /**
+     * Evento mouse released: completa creazione, spostamento o resize della shape.
+     *
+     * @param e evento di rilascio del mouse.
+     */
     public void onReleased(MouseEvent e) {
         if (currentResizeMode != ResizeMode.NONE) {
             currentResizeMode = ResizeMode.NONE;
@@ -370,6 +431,11 @@ public class MouseEventHandler implements ClipboardReceiver {
         }
     }
 
+    /**
+     * Evento mouse click: seleziona shape esistenti o gestisce il paste-mode.
+     *
+     * @param e evento di click del mouse.
+     */
     public void onMouseClick(MouseEvent e) {
         // gestione logica incolla
         if (shapeToPaste != null) {

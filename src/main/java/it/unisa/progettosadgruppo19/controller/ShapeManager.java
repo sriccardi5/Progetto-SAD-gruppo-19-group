@@ -18,6 +18,12 @@ public class ShapeManager implements ShapeManagerReceiver, ZOrderReceiver {
     private final List<AbstractShape> currentShapes;
     private final Pane drawingPane;
 
+    /**
+     * Costruisce un gestore di shape per la lista e il Pane specificati.
+     *
+     * @param currentShapes lista di shape gestite.
+     * @param drawingPane   Pane in cui visualizzare le shape.
+     */
     public ShapeManager(List<AbstractShape> currentShapes, Pane drawingPane) {
         this.currentShapes = currentShapes;
         this.drawingPane = drawingPane;
