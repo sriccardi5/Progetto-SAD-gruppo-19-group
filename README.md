@@ -20,10 +20,14 @@ https://docs.google.com/presentation/d/18kC6IL6vC8kEIFCqZXTDvHZF942UNRSJgkE4_Dha
 
 https://docs.google.com/presentation/d/1Fo8CridRR4CJrb7PYKAl9ak8KszQ70fZmpO1VU8DsBw/edit?slide=id.g35b44a2c5ea_0_0#slide=id.g35b44a2c5ea_0_0
 
-## 1st Sprint Retrospective Report
+## Presentazione 2nd Sprint
+
+https://docs.google.com/presentation/d/1pINktPDKNjaePRPpMLAq91d3ny-85TkWHD8yZ9ZhMZg/edit?usp=sharing
+
+## Sprint Retrospective Report
 
 https://docs.google.com/document/d/1WGlbV7cPCGO8MIbBsCpeyJAIt5wfyEcDhNiLQKfwmNU/edit?tab=t.0
 
-## 1st Sprint Review Report
+## Sprint Review Report
 
 https://docs.google.com/document/d/1aCM3vG8bZHXMymJbDjuq2OQo6VLNgo139jtam1vn7Ec/edit?tab=t.0
