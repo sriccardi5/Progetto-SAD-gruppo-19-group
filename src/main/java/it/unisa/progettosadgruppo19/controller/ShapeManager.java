@@ -22,7 +22,7 @@ public class ShapeManager implements ShapeManagerReceiver, ZOrderReceiver {
      * Costruisce un gestore di shape per la lista e il Pane specificati.
      *
      * @param currentShapes lista di shape gestite.
-     * @param drawingPane   Pane in cui visualizzare le shape.
+     * @param drawingPane Pane in cui visualizzare le shape.
      */
     public ShapeManager(List<AbstractShape> currentShapes, Pane drawingPane) {
         this.currentShapes = currentShapes;
@@ -75,15 +75,20 @@ public class ShapeManager implements ShapeManagerReceiver, ZOrderReceiver {
         AbstractShape abs = AbstractShape.unwrapToAbstract(shape);
 
         if (index < 0 || index > currentShapes.size()) {
-            System.out.println("[INSERT] Indice fuori range, aggiungo in fondo");
+            System.out.println("[INSERT] Indice currentShapes fuori range, aggiungo in fondo");
             currentShapes.add(abs);
-            drawingPane.getChildren().add(shape.getNode());
         } else {
             currentShapes.add(index, abs);
+        }
+
+        if (index < 0 || index > drawingPane.getChildren().size()) {
+            System.out.println("[INSERT] Indice drawingPane fuori range, aggiungo in fondo");
+            drawingPane.getChildren().add(shape.getNode());
+        } else {
             drawingPane.getChildren().add(index, shape.getNode());
         }
 
-        System.out.println("[INSERT] Nodo aggiunto: " + shape.getClass().getSimpleName());
+        System.out.println("[INSERT] Nodo aggiunto: " + shape.getClass().getSimpleName() + " all'indice " + index);
     }
 
     @Override
@@ -103,11 +108,22 @@ public class ShapeManager implements ShapeManagerReceiver, ZOrderReceiver {
     public void setZIndex(Shape shape, int index) {
         Node node = shape.getNode();
         drawingPane.getChildren().remove(node);
+        System.out.println("[Z-ORDER] Sposto " + shape.getClass().getSimpleName() + " a indice " + index);
         if (index >= drawingPane.getChildren().size()) {
             drawingPane.getChildren().add(node);
         } else {
             drawingPane.getChildren().add(index, node);
         }
+    }
+
+    @Override
+    public boolean containsNode(Node node) {
+        return drawingPane.getChildren().contains(node);
+    }
+
+    @Override
+    public void registerOnly(Shape shape) {
+        currentShapes.add(AbstractShape.unwrapToAbstract(shape));
     }
 
 }

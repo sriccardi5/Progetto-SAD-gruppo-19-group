@@ -10,7 +10,7 @@
         <VBox spacing="0">
 
             <!-- Barra comandi base -->
-            <ToolBar>
+            <ToolBar fx:id="toolbar">
                <Button fx:id="zoomOutButton" text="−" onAction="#onZoomOut"/>
                 <Button fx:id="zoomInButton"  text="+" onAction="#onZoomIn"/>
                 <Button fx:id="undoButton" text="↶ Annulla" onAction="#onUndo" />

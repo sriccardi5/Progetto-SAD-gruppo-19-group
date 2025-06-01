@@ -17,19 +17,23 @@ import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
+import javafx.scene.paint.Color;
 
 /**
- * Controller principale per l'interfaccia di disegno.
- * Gestisce la toolbar, il canvas, i comandi di file (salva/carica),
- * undo/redo e l'applicazione di stroke, fill e zoom.
+ * Controller principale per l'interfaccia di disegno. Gestisce la toolbar, il
+ * canvas, i comandi di file (salva/carica), undo/redo e l'applicazione di
+ * stroke, fill e zoom.
  */
 public class Controller {
 
     @FXML
     private Pane drawingPane;
     @FXML
+    private ToolBar toolbar;
+    @FXML
     private Button lineButton, rectButton, ellipseButton, saveButton, loadButton, deleteButton, copyButton,
-            cutButton, pasteButton, zoomInButton, zoomOutButton, bringToFrontButton, sendToBackButton,
+            cutButton, pasteButton, zoomInButton, zoomOutButton, bringToFrontButton, sendToBackButton, undoButton,
             gridButton;
     @FXML
     private ColorPicker strokePicker, fillPicker;
@@ -59,6 +63,10 @@ public class Controller {
 
         mouseHandler.setSelectedShape(selectedShape);
         mouseHandler.setToolActive(true);
+        mouseHandler.setInvoker(commandInvoker);
+        Platform.runLater(() -> {
+            mouseHandler.setToolbarHeight(toolbar.getHeight());
+        });
 
         strokePicker.setValue(javafx.scene.paint.Color.BLACK);
         fillPicker.setValue(javafx.scene.paint.Color.TRANSPARENT);
@@ -102,6 +110,7 @@ public class Controller {
             Shape selected = mouseHandler.getSelectedShapeInstance();
             if (selected != null) {
                 int maxIndex = drawingPane.getChildren().size() - 1;
+                System.out.println("[FRONT] Portando " + selected.getClass().getSimpleName() + " all'indice " + maxIndex);
                 commandInvoker.execute(new ZLevelsToFront(shapeManager, selected, maxIndex));
             }
         });
@@ -110,9 +119,12 @@ public class Controller {
             Shape selected = mouseHandler.getSelectedShapeInstance();
             if (selected != null) {
                 int gridCount = gridManager.getGridLayerCount();
+                 System.out.println("[BACK] Portando " + selected.getClass().getSimpleName() + " all'indice " + gridCount);
                 commandInvoker.execute(new ZLevelsToBack(shapeManager, selected, gridCount));
             }
         });
+
+        undoButton.setOnAction(e -> onUndo());
 
         gridButton.setOnAction(e -> {
             // se la griglia non è già presente, chiedi la dimensione
@@ -136,17 +148,16 @@ public class Controller {
                         alert.showAndWait();
                     }
                 });
-            }
-            // se la griglia è già visibile, la rimuoviamo direttamente
+            } // se la griglia è già visibile, la rimuoviamo direttamente
             else {
                 gridManager.toggleGrid();
                 gridButton.setStyle("");
             }
         });
-            zoomInButton.setOnAction(e -> {
-                double s = zoomManager.zoomIn();
-                scaleTransform.setX(s);
-                scaleTransform.setY(s);
+        zoomInButton.setOnAction(e -> {
+            double s = zoomManager.zoomIn();
+            scaleTransform.setX(s);
+            scaleTransform.setY(s);
         });
 
         zoomOutButton.setOnAction(e -> {
@@ -164,7 +175,8 @@ public class Controller {
     /**
      * Seleziona il tipo di shape da creare.
      *
-     * @param tipo nome del tipo di shape ("Linea", "Rettangolo", "Ellisse", ecc.)
+     * @param tipo nome del tipo di shape ("Linea", "Rettangolo", "Ellisse",
+     * ecc.)
      */
     private void setTool(String tipo) {
         selectedShape = tipo;
@@ -175,43 +187,46 @@ public class Controller {
         mouseHandler.unselectShape();
     }
 
-    /** Esegue il comando di salvataggio su file. */
+    /**
+     * Esegue il comando di salvataggio su file.
+     */
     private void onSave() {
         Stage stage = (Stage) saveButton.getScene().getWindow();
         new Save(stage, currentShapes, fileManager).execute();
     }
 
-    /** Esegue il comando di caricamento da file. */
+    /**
+     * Esegue il comando di caricamento da file.
+     */
     private void onLoad() {
         Stage stage = (Stage) loadButton.getScene().getWindow();
         new Load(stage, currentShapes, drawingPane, fileManager).execute();
     }
 
-    /** Applica il colore di contorno (stroke) alla shape selezionata. */
+    /**
+     * Applica il colore di contorno (stroke) alla shape selezionata.
+     */
     private void applyStroke() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
         if (selected != null) {
-            Shape decorated = new StrokeDecorator(selected, strokePicker.getValue());
-            int index = drawingPane.getChildren().indexOf(selected.getNode());
-            drawingPane.getChildren().set(index, decorated.getNode());
-            decorated.getNode().setUserData(decorated);
-            mouseHandler.setSelectedShapeInstance(decorated);
+            Color oldStroke = (Color) ((javafx.scene.shape.Shape) selected.getNode()).getStroke();
+            Color newStroke = strokePicker.getValue();
+            mouseHandler.applyUndoableStrategy(new ChangeStroke(selected, oldStroke, newStroke));
         }
     }
 
-    /** Applica il colore di riempimento (fill) alla shape selezionata. */
+    /**
+     * Applica il colore di riempimento (fill) alla shape selezionata.
+     */
     private void applyFill() {
         Shape selected = mouseHandler.getSelectedShapeInstance();
         if (selected != null) {
-            Shape decorated = new FillDecorator(selected, fillPicker.getValue());
-            int index = drawingPane.getChildren().indexOf(selected.getNode());
-            drawingPane.getChildren().set(index, decorated.getNode());
-            decorated.getNode().setUserData(decorated);
-            mouseHandler.setSelectedShapeInstance(decorated);
+            Color oldFill = (Color) ((javafx.scene.shape.Shape) selected.getNode()).getFill();
+            Color newFill = fillPicker.getValue();
+            mouseHandler.applyUndoableStrategy(new ChangeFill(selected, oldFill, newFill));
         }
     }
 
-    
     @FXML
     public void handlePaste() {
         drawingPane.setOnMouseClicked(event -> {
@@ -220,7 +235,9 @@ public class Controller {
         });
     }
 
-    /** Zoom avanti applicando il fattore successivo. */
+    /**
+     * Zoom avanti applicando il fattore successivo.
+     */
     @FXML
     private void onZoomIn() {
         double s = zoomManager.zoomIn();
@@ -228,7 +245,9 @@ public class Controller {
         scaleTransform.setY(s);
     }
 
-    /** Zoom avanti applicando il fattore precedente. */
+    /**
+     * Zoom avanti applicando il fattore precedente.
+     */
     @FXML
     private void onZoomOut() {
         double s = zoomManager.zoomOut();
@@ -236,13 +255,17 @@ public class Controller {
         scaleTransform.setY(s);
     }
 
-    /** Annulla l'ultimo comando eseguito (undo). */
+    /**
+     * Annulla l'ultimo comando eseguito (undo).
+     */
     @FXML
     private void onUndo() {
         commandInvoker.undo();
     }
 
-    /** Attiva la modalità click-per-incollare. */
+    /**
+     * Attiva la modalità click-per-incollare.
+     */
     private void enablePasteMode() {
         System.out.println("[PASTE MODE] Attivato: clicca sul canvas per incollare");
         drawingPane.setOnMouseClicked(event -> {
